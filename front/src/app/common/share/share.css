@@ -1,0 +1,171 @@
+:host {
+  display: inline-flex;
+}
+
+.share {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s,
+    transform 0.12s;
+}
+
+.share:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.share:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.share:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.share--ghost {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #fff;
+}
+
+.share--ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
+  color: #fff;
+}
+
+.share--icon {
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  border-color: transparent;
+  color: var(--text-secondary);
+  box-shadow: var(--shadow);
+}
+
+.share--icon:hover:not(:disabled) {
+  background: #fff;
+  color: var(--primary);
+  border-color: transparent;
+}
+
+/* Variante plana: para filas de tabla o barras de acciones. */
+.share--flat {
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+
+.share--flat:hover:not(:disabled) {
+  background: var(--bg);
+  color: var(--primary);
+}
+
+/* --------------------------------------------------- Fallback sin portapapeles */
+
+.manual-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--overlay);
+}
+
+.manual-dialog {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 24px 26px 20px;
+  box-shadow: var(--shadow-lg);
+}
+
+.manual-dialog h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.manual-dialog p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.manual-dialog input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  font-size: 13px;
+  outline: none;
+}
+
+.manual-dialog input:focus {
+  border-color: var(--primary);
+}
+
+.manual-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.manual-btn {
+  padding: 9px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.manual-btn--secondary {
+  background: var(--bg);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.manual-btn--secondary:hover {
+  background: var(--border);
+}
+
+.manual-btn--primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.manual-btn--primary:hover {
+  background: var(--primaryFocus);
+}

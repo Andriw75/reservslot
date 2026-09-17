@@ -29,9 +29,17 @@
           </span>
         }
       </div>
-      @if (ambiente() && !ambiente()!.activo) {
-        <span class="status-chip">No disponible</span>
-      }
+      <div class="detail-header-actions">
+        @if (ambiente() && !ambiente()!.activo) {
+          <span class="status-chip">No disponible</span>
+        }
+        <app-share-button
+          [url]="shareUrl()"
+          [title]="ambiente()?.nombre ?? 'Ambiente'"
+          [text]="'Mira ' + (ambiente()?.nombre ?? 'este ambiente') + ' en ReservSlot'"
+          label="Compartir ambiente"
+        />
+      </div>
     </section>
 
     <section class="detail-grid">

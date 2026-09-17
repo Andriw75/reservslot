@@ -143,7 +143,28 @@ Usuario inicial (mock): `usuario` / `placeholder-password`.
 
 ---
 
-## 6. Tiempo real (SSE)
+## 6. Enlaces para compartir un ambiente
+
+El botón **Compartir** (portal público, detalle del ambiente y panel admin) copia al
+portapapeles un enlace con este formato:
+
+```
+https://tu-dominio/?ambiente={id}
+```
+
+Al abrirlo, el portal baja hasta la tarjeta de ese ambiente dentro del catálogo y la
+resalta unos segundos. Sin el parámetro `ambiente` el enlace abre la portada normal.
+
+- En móvil/táctil se usa la hoja nativa de compartir del sistema (`navigator.share`);
+  en escritorio se copia el enlace directo.
+- Si el ambiente ya no existe, el portal simplemente se muestra sin resaltar nada.
+- `navigator.share` y `navigator.clipboard` requieren **contexto seguro** (https o
+  localhost). En http por IP el componente muestra un cuadro con la URL seleccionable
+  para copiarla a mano.
+
+---
+
+## 7. Tiempo real (SSE)
 
 Un único `EventSource` multiplexado. El cliente declara los topics al conectar:
 

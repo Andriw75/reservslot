@@ -97,6 +97,12 @@
   cursor: not-allowed;
 }
 
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
 .btn {
   padding: 8px 16px;
   border: none;

@@ -1,8 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { AmbientesService } from '../../../services/ambientes.service';
 import { ConfirmService } from '../../../services/confirm.service';
+import { ShareService } from '../../../services/share.service';
 import { SportslotStoreService } from '../../../services/sportslot-store.service';
 import { ToastService } from '../../../services/toast.service';
+import { ShareButtonComponent } from '../../../common/share/share';
 import { AmbienteModalComponent } from './modal';
 import { AmbienteInfoModalComponent } from './info-modal';
 import type { Ambiente } from '../../../models/ambiente';
@@ -11,13 +13,14 @@ import type { Ambiente } from '../../../models/ambiente';
   selector: 'app-ambientes-list',
   templateUrl: './list.html',
   styleUrl: './list.css',
-  imports: [AmbienteModalComponent, AmbienteInfoModalComponent],
+  imports: [AmbienteModalComponent, AmbienteInfoModalComponent, ShareButtonComponent],
 })
 export class AmbientesListComponent {
   private store = inject(SportslotStoreService);
   private service = inject(AmbientesService);
   private toast = inject(ToastService);
   private confirm = inject(ConfirmService);
+  private share = inject(ShareService);
 
   ambientes = this.store.ambientes;
   categorias = this.store.categorias;
@@ -29,6 +32,10 @@ export class AmbientesListComponent {
 
   categoriaName(id: number): string {
     return this.categorias().find((categoria) => categoria.id === id)?.nombre ?? 'Sin categoría';
+  }
+
+  ambienteUrl(id: number): string {
+    return this.share.ambienteUrl(id);
   }
 
   openCreate(): void {

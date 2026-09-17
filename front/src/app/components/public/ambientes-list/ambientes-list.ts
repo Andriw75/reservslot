@@ -1,6 +1,8 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SportslotStoreService } from '../../../services/sportslot-store.service';
+import { ShareService } from '../../../services/share.service';
+import { ShareButtonComponent } from '../../../common/share/share';
 import { imagenArchivoUrl } from '../../../models/imagen';
 import type { Ambiente } from '../../../models/ambiente';
 import type { Categoria } from '../../../models/categoria';
@@ -19,13 +21,22 @@ interface Paso {
   selector: 'app-public-ambientes-list',
   templateUrl: './ambientes-list.html',
   styleUrl: './ambientes-list.css',
-  imports: [RouterLink],
+  imports: [RouterLink, ShareButtonComponent],
 })
 export class AmbientesListComponent {
   private store = inject(SportslotStoreService);
+  private share = inject(ShareService);
+
+  // Permite enlaces directos al catálogo con un ambiente resaltado:
+  //   /?ambiente=3
+  ambiente = input<string>();
 
   categorias = this.store.categorias;
   ambientes = this.store.ambientes;
+
+  highlightedId = signal<number | null>(null);
+
+  private alreadyHighlighted: number | null = null;
 
   readonly pasos: Paso[] = [
     {
@@ -70,6 +81,32 @@ export class AmbientesListComponent {
       const unsubscribe = this.store.subscribeTopic('categorias');
       onCleanup(unsubscribe);
     });
+
+    // Enlace compartido: cuando el catálogo esté listo, baja hasta la tarjeta
+    // del ambiente pedido y la resalta unos segundos.
+    effect((onCleanup) => {
+      const raw = this.ambiente();
+      const id = raw ? Number(raw) : Number.NaN;
+      if (Number.isNaN(id)) return;
+      if (!this.store.catalogReady()) return;
+      if (!this.ambientes().some((item) => item.id === id)) return;
+      if (this.alreadyHighlighted === id) return;
+
+      this.alreadyHighlighted = id;
+      this.highlightedId.set(id);
+
+      const scrollTimer = setTimeout(() => this.scrollToAmbiente(id), 80);
+      const clearTimer = setTimeout(() => this.highlightedId.set(null), 4000);
+
+      onCleanup(() => {
+        clearTimeout(scrollTimer);
+        clearTimeout(clearTimer);
+      });
+    });
+  }
+
+  ambienteUrl(id: number): string {
+    return this.share.ambienteUrl(id);
   }
 
   categoryColor(group: CategoriaGroup): string {
@@ -83,5 +120,11 @@ export class AmbientesListComponent {
   scrollTo(event: Event, id: string): void {
     event.preventDefault();
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  private scrollToAmbiente(id: number): void {
+    document
+      .getElementById(`ambiente-${id}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }

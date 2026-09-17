@@ -1,7 +1,9 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SportslotStoreService } from '../../../services/sportslot-store.service';
+import { ShareService } from '../../../services/share.service';
 import { ToastService } from '../../../services/toast.service';
+import { ShareButtonComponent } from '../../../common/share/share';
 import { imagenUrl } from '../../../models/imagen';
 import type { AmbienteInfoData } from '../../../models/ambiente-info';
 import type { Imagen } from '../../../models/imagen';
@@ -29,12 +31,13 @@ interface TooltipState {
   selector: 'app-public-ambiente-detail',
   templateUrl: './ambiente-detail.html',
   styleUrl: './ambiente-detail.css',
-  imports: [RouterLink],
+  imports: [RouterLink, ShareButtonComponent],
 })
 export class AmbienteDetailComponent {
   private store = inject(SportslotStoreService);
   private toast = inject(ToastService);
   private router = inject(Router);
+  private share = inject(ShareService);
 
   id = input.required<string>();
 
@@ -93,6 +96,10 @@ export class AmbienteDetailComponent {
     const image = this.currentImage();
     return image ? imagenUrl(image) : '';
   });
+
+  // Enlace compartible: abre el catálogo de la portada con este ambiente
+  // resaltado (no la vista de horario).
+  shareUrl = computed(() => this.share.ambienteUrl(this.ambienteId()));
 
   private readonly segmentsByDay = computed(() => {
     const grouped = new Map<number, ScheduleSegment[]>();

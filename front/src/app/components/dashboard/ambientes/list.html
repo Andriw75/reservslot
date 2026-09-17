@@ -36,18 +36,27 @@
             }
           </td>
           <td>
-            <button class="btn-icon" title="Información" (click)="openInfo(ambiente)">
-              📋 Info
-            </button>
-            <button class="btn-icon" title="Editar" (click)="openEdit(ambiente)">✏️</button>
-            <button
-              class="btn-icon"
-              title="Eliminar"
-              (click)="confirmDelete(ambiente)"
-              [disabled]="deleting() === ambiente.id"
-            >
-              🗑️
-            </button>
+            <div class="row-actions">
+              <button class="btn-icon" title="Información" (click)="openInfo(ambiente)">
+                📋 Info
+              </button>
+              <button class="btn-icon" title="Editar" (click)="openEdit(ambiente)">✏️</button>
+              <app-share-button
+                variant="flat"
+                [url]="ambienteUrl(ambiente.id)"
+                [title]="ambiente.nombre"
+                [text]="'Mira ' + ambiente.nombre + ' en ReservSlot'"
+                [label]="'Compartir ' + ambiente.nombre"
+              />
+              <button
+                class="btn-icon"
+                title="Eliminar"
+                (click)="confirmDelete(ambiente)"
+                [disabled]="deleting() === ambiente.id"
+              >
+                🗑️
+              </button>
+            </div>
           </td>
         </tr>
       } @empty {

@@ -1,0 +1,68 @@
+@if (variant() === 'icon' || variant() === 'flat') {
+  <button
+    type="button"
+    class="share share--icon"
+    [class.share--flat]="variant() === 'flat'"
+    [title]="label()"
+    [attr.aria-label]="label()"
+    [disabled]="disabled()"
+    (click)="onShare()"
+  >
+    <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7L12 19"
+      />
+    </svg>
+  </button>
+} @else {
+  <button
+    type="button"
+    class="share"
+    [class.share--ghost]="variant() === 'ghost'"
+    [disabled]="disabled()"
+    (click)="onShare()"
+  >
+    <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7L12 19"
+      />
+    </svg>
+    <span>{{ copied() ? '¡Copiado!' : label() }}</span>
+  </button>
+}
+
+@if (manualUrl(); as link) {
+  <div class="manual-overlay" (click)="closeManual()">
+    <div class="manual-dialog" (click)="$event.stopPropagation()">
+      <h3>Copiar enlace</h3>
+      <p>
+        Tu navegador bloqueó el acceso al portapapeles. Selecciona el enlace y cópialo manualmente.
+      </p>
+      <input
+        type="text"
+        [value]="link"
+        readonly
+        (focus)="selectAll($event)"
+        (click)="selectAll($event)"
+      />
+      <div class="manual-actions">
+        <button type="button" class="manual-btn manual-btn--secondary" (click)="closeManual()">
+          Cerrar
+        </button>
+        <button type="button" class="manual-btn manual-btn--primary" (click)="copyLink()">
+          Reintentar
+        </button>
+      </div>
+    </div>
+  </div>
+}

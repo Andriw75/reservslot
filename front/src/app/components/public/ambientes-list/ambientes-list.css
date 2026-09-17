@@ -532,10 +532,23 @@ main {
   align-items: stretch;
 }
 
+.ambiente-card-wrap {
+  position: relative;
+  display: flex;
+}
+
+.card-share {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+}
+
 .ambiente-card {
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -545,6 +558,40 @@ main {
     transform 0.15s,
     box-shadow 0.15s,
     border-color 0.15s;
+}
+
+/* Resaltado al llegar por un enlace compartido (?ambiente=id) */
+.is-highlighted .ambiente-card {
+  border-color: var(--primary);
+  box-shadow:
+    0 0 0 3px rgba(15, 118, 110, 0.28),
+    0 10px 26px rgba(15, 118, 110, 0.22);
+  animation: cardPulse 1.5s ease-in-out 3;
+}
+
+@keyframes cardPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 3px rgba(15, 118, 110, 0.28),
+      0 10px 26px rgba(15, 118, 110, 0.22);
+  }
+  50% {
+    box-shadow:
+      0 0 0 9px rgba(15, 118, 110, 0.18),
+      0 10px 26px rgba(15, 118, 110, 0.22);
+  }
+}
+
+.is-highlighted .card-category {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-highlighted .ambiente-card {
+    animation: none;
+  }
 }
 
 .ambiente-card:hover {

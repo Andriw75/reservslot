@@ -131,31 +131,46 @@
 
         <div class="ambientes-grid">
           @for (ambiente of group.ambientes; track ambiente.id) {
-            <a
-              class="ambiente-card"
-              [routerLink]="['/ambientes', ambiente.id]"
-              [style.--card-accent]="categoryColor(group)"
+            <div
+              class="ambiente-card-wrap"
+              [class.is-highlighted]="highlightedId() === ambiente.id"
             >
-              <div class="card-media">
-                @if (ambienteImage(ambiente); as src) {
-                  <img [src]="src" [alt]="ambiente.nombre" loading="lazy" />
-                } @else {
-                  <span class="card-media-empty">{{ ambiente.nombre.charAt(0) }}</span>
-                }
-                @if (!ambiente.activo) {
-                  <span class="card-badge card-badge--off">No disponible</span>
-                }
-              </div>
+              <a
+                class="ambiente-card"
+                [id]="'ambiente-' + ambiente.id"
+                [routerLink]="['/ambientes', ambiente.id]"
+                [style.--card-accent]="categoryColor(group)"
+              >
+                <div class="card-media">
+                  @if (ambienteImage(ambiente); as src) {
+                    <img [src]="src" [alt]="ambiente.nombre" loading="lazy" />
+                  } @else {
+                    <span class="card-media-empty">{{ ambiente.nombre.charAt(0) }}</span>
+                  }
+                  @if (!ambiente.activo) {
+                    <span class="card-badge card-badge--off">No disponible</span>
+                  }
+                </div>
 
-              <div class="card-body">
-                <span class="card-category">{{ group.categoria?.nombre ?? 'Otros' }}</span>
-                <h4 class="card-name">{{ ambiente.nombre }}</h4>
-                <span class="card-cta">
-                  Ver disponibilidad
-                  <span class="card-cta-arrow">→</span>
-                </span>
-              </div>
-            </a>
+                <div class="card-body">
+                  <span class="card-category">{{ group.categoria?.nombre ?? 'Otros' }}</span>
+                  <h4 class="card-name">{{ ambiente.nombre }}</h4>
+                  <span class="card-cta">
+                    Ver disponibilidad
+                    <span class="card-cta-arrow">→</span>
+                  </span>
+                </div>
+              </a>
+
+              <app-share-button
+                class="card-share"
+                variant="icon"
+                [url]="ambienteUrl(ambiente.id)"
+                [title]="ambiente.nombre"
+                [text]="'Mira ' + ambiente.nombre + ' en ReservSlot'"
+                [label]="'Compartir ' + ambiente.nombre"
+              />
+            </div>
           }
         </div>
       </section>
