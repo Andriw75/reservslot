@@ -11,7 +11,6 @@ import (
 
 type Config struct {
 	ServerPort string
-	UseMock    bool
 
 	// PostgreSQL / Neon
 	DatabaseURL string
@@ -42,7 +41,6 @@ func LoadConfig() (*Config, error) {
 
 	cfg := &Config{
 		ServerPort:         getEnv("SERVER_PORT", ":8080"),
-		UseMock:            getEnvBool("USE_MOCK", true),
 		DatabaseURL:        getEnv("DATABASE_URL", ""),
 		DBType:             getEnv("DB_TYPE", "postgres"),
 		DBHost:             getEnv("DB_HOST", "localhost"),

@@ -27,7 +27,7 @@ func (h *AuthHandler) Token(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := h.deps.UserStore.IsValidPassword(h.deps.CryptManager, username, password)
+	user, ok := h.deps.UserStore.IsValidPassword(username, password)
 	if !ok {
 		writeJSONError(w, http.StatusUnauthorized, "invalid credentials")
 		return

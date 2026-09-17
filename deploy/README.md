@@ -52,7 +52,6 @@ Variables en `back/.env`:
 
 ```
 SERVER_PORT=:8080
-USE_MOCK=true
 DATABASE_URL=postgresql://usuario:password@host:5432/reservslot?sslmode=require
 PUBLIC_DIR=.
 JWT_SECRET=...
@@ -60,14 +59,25 @@ JWT_SECRET=...
 
 - `PUBLIC_DIR` es la raíz web; el código agrega `/public` y dentro `/imagenes`.
   Con `PUBLIC_DIR=.` las imágenes quedan en `back/public/imagenes`.
-- `USE_MOCK=true` usa stores en memoria (fase actual). Con `USE_MOCK=false`
-  se usa `DATABASE_URL` (Neon/PostgreSQL). El esquema está en `back/schema.sql`:
-
-```powershell
-psql "$env:DATABASE_URL" -f back/schema.sql
-```
 
 Servidor: `http://localhost:8080` — health en `/health`.
+
+### Base de datos
+
+Los archivos SQL viven en `back/db/` y se aplican **manualmente** en el servidor
+(el backend no ejecuta migraciones ni verifica el esquema al arrancar):
+
+```
+back/db/schema.sql   # esquema completo (tablas, funciones, triggers, índices)
+back/db/seed.sql     # usuario inicial (usuario / placeholder-password)
+```
+
+Puedes pegarlos en el editor SQL de Neon, o ejecutarlos con psql:
+
+```powershell
+psql "$env:DATABASE_URL" -f back/db/schema.sql
+psql "$env:DATABASE_URL" -f back/db/seed.sql
+```
 
 ---
 
