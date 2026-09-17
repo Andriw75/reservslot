@@ -5,12 +5,23 @@ import { imagenUrl } from '../../../models/imagen';
 import type { AmbienteInfoData } from '../../../models/ambiente-info';
 import type { Imagen } from '../../../models/imagen';
 import { buildWeek } from './schedule';
-import type { ScheduleBlock } from './schedule';
+import type { ScheduleSegment } from './schedule';
 import { formatRangeLabel } from './time';
 
 interface InfoRow {
   label: string;
   value: string;
+}
+
+interface AttributeRow {
+  clave: string;
+  valor: string;
+}
+
+interface TooltipState {
+  x: number;
+  y: number;
+  lines: string[];
 }
 
 @Component({
@@ -41,6 +52,9 @@ export class AmbienteDetailComponent {
   schedule = computed(() => buildWeek(this.ocupaciones().data));
   weekLabel = computed(() => formatRangeLabel(this.ocupaciones().from, this.ocupaciones().to));
 
+  hoveredKey = signal<string | null>(null);
+  tooltip = signal<TooltipState | null>(null);
+
   images = computed<Imagen[]>(() => [...this.info().imagenes].sort((a, b) => a.orden - b.orden));
 
   currentImage = computed<Imagen | null>(() => {
@@ -67,26 +81,19 @@ export class AmbienteDetailComponent {
     return typeof value === 'string' ? value : '';
   });
 
-  options = computed<InfoRow[]>(() => {
-    const data: AmbienteInfoData = this.info().info?.data ?? {};
-    const options = data.opciones_adicionales ?? {};
-    return Object.entries(options).map(([label, value]) => ({
-      label,
-      value: value ? 'Sí' : 'No',
-    }));
-  });
+  attributes = computed<AttributeRow[]>(() => readAttributes(this.info().info?.data ?? {}));
 
   currentImageUrl = computed(() => {
     const image = this.currentImage();
     return image ? imagenUrl(image) : '';
   });
 
-  private readonly blocksByDay = computed(() => {
-    const grouped = new Map<number, ScheduleBlock[]>();
-    for (const block of this.schedule().blocks) {
-      const list = grouped.get(block.dayIndex) ?? [];
-      list.push(block);
-      grouped.set(block.dayIndex, list);
+  private readonly segmentsByDay = computed(() => {
+    const grouped = new Map<number, ScheduleSegment[]>();
+    for (const segment of this.schedule().segments) {
+      const list = grouped.get(segment.dayIndex) ?? [];
+      list.push(segment);
+      grouped.set(segment.dayIndex, list);
     }
     return grouped;
   });
@@ -95,8 +102,8 @@ export class AmbienteDetailComponent {
     return imagenUrl(image);
   }
 
-  blocksForDay(dayIndex: number): ScheduleBlock[] {
-    return this.blocksByDay().get(dayIndex) ?? [];
+  segmentsForDay(dayIndex: number): ScheduleSegment[] {
+    return this.segmentsByDay().get(dayIndex) ?? [];
   }
 
   constructor() {
@@ -127,4 +134,47 @@ export class AmbienteDetailComponent {
   selectImage(index: number): void {
     this.activeImage.set(index);
   }
+
+  isHighlighted(segment: ScheduleSegment): boolean {
+    return this.hoveredKey() === segment.key;
+  }
+
+  onSegmentEnter(event: MouseEvent, segment: ScheduleSegment): void {
+    this.hoveredKey.set(segment.key);
+    this.updateTooltip(event, segment);
+  }
+
+  onSegmentMove(event: MouseEvent, segment: ScheduleSegment): void {
+    if (this.hoveredKey() !== segment.key) return;
+    this.updateTooltip(event, segment);
+  }
+
+  onSegmentLeave(): void {
+    this.hoveredKey.set(null);
+    this.tooltip.set(null);
+  }
+
+  private updateTooltip(event: MouseEvent, segment: ScheduleSegment): void {
+    this.tooltip.set({ x: event.clientX, y: event.clientY, lines: segment.tooltip });
+  }
+}
+
+function readAttributes(data: AmbienteInfoData): AttributeRow[] {
+  const attrs = data['atributos'];
+  if (Array.isArray(attrs)) {
+    return attrs
+      .map((item) => item as { clave?: unknown; valor?: unknown })
+      .filter((item) => item && typeof item.clave === 'string')
+      .map((item) => ({ clave: item.clave as string, valor: String(item.valor ?? '') }));
+  }
+
+  const legacy = data.opciones_adicionales;
+  if (legacy && typeof legacy === 'object') {
+    return Object.entries(legacy).map(([clave, valor]) => ({
+      clave,
+      valor: valor ? 'Sí' : 'No',
+    }));
+  }
+
+  return [];
 }

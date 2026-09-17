@@ -1,10 +1,16 @@
 import type { Imagen } from './imagen';
 
+export interface AtributoItem {
+  clave: string;
+  valor: string;
+}
+
 export interface AmbienteInfoData {
   ancho?: number | null;
   alto?: number | null;
   aforo?: number | null;
   descripcion?: string;
+  atributos?: AtributoItem[];
   opciones_adicionales?: Record<string, boolean>;
   [key: string]: unknown;
 }

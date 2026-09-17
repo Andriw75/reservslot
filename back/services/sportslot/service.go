@@ -9,13 +9,13 @@ import (
 )
 
 type ServicioSportSlot struct {
-	Categorias    CategoriaStore
-	Ambientes     AmbienteStore
-	AmbienteInfo  AmbienteInfoStore
-	Imagenes      ImagenStore
-	Ocupaciones   OcupacionStore
-	Storage       *storage.Storage
-	SSEBus         *SSEBus
+	Categorias   CategoriaStore
+	Ambientes    AmbienteStore
+	AmbienteInfo AmbienteInfoStore
+	Imagenes     ImagenStore
+	Ocupaciones  OcupacionStore
+	Storage      *storage.Storage
+	SSEBus       *SSEBus
 }
 
 type SportslotSnapshot struct {
@@ -71,6 +71,16 @@ func dataToRaw(b []byte) json.RawMessage {
 
 func (s *ServicioSportSlot) SaveImagenes(ambienteID int64, archivos []*multipart.FileHeader, allowedExts map[string]bool) ([]Imagen, error) {
 	return s.Imagenes.AddFiles(ambienteID, archivos, s.Storage, allowedExts)
+}
+
+func (s *ServicioSportSlot) ReorderImagenes(ambienteID int64, ids []int64) ([]Imagen, error) {
+	if len(ids) == 0 {
+		return nil, ErrInvalidTimeRange
+	}
+	if err := s.Imagenes.UpdateOrden(ambienteID, ids); err != nil {
+		return nil, err
+	}
+	return s.Imagenes.ListByAmbienteID(ambienteID)
 }
 
 func sortByOrden[T any](items []T, less func(a, b T) bool) {

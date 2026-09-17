@@ -70,6 +70,7 @@ func NewRouter(deps *handlers.Dependencies) chi.Router {
 		r.Put("/ambientes/{id}/info", sportSlot.UpsertAmbienteInfo)
 		r.Patch("/ambientes/{id}/info", sportSlot.UpsertAmbienteInfo)
 		r.Post("/ambientes/{id}/imagenes", sportSlot.UploadAmbienteImagenes)
+		r.Put("/ambientes/{id}/imagenes/orden", sportSlot.ReorderAmbienteImagenes)
 		r.Delete("/ambientes/{id}/imagenes/{imagenID}", sportSlot.DeleteAmbienteImagen)
 
 		r.Post("/ocupaciones", sportSlot.PostOcupacion)

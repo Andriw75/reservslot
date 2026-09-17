@@ -36,6 +36,7 @@ type ImagenStore interface {
 	AddFiles(ambienteID int64, archivos []*multipart.FileHeader, store *storage.Storage, allowedExts map[string]bool) ([]Imagen, error)
 	ListByAmbienteID(ambienteID int64) ([]Imagen, error)
 	DeleteByID(id int64) (*Imagen, error)
+	UpdateOrden(ambienteID int64, ids []int64) error
 }
 
 type OcupacionStore interface {

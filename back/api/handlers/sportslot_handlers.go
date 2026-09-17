@@ -417,6 +417,42 @@ func (h *SportSlotHandlers) DeleteAmbienteImagen(w http.ResponseWriter, r *http.
 	writeJSON(w, http.StatusOK, map[string]string{"message": "deleted"})
 }
 
+func (h *SportSlotHandlers) ReorderAmbienteImagenes(w http.ResponseWriter, r *http.Request) {
+	ambienteID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		writeJSONError(w, http.StatusBadRequest, "invalid id")
+		return
+	}
+	if _, err := h.Service.Ambientes.FindByID(ambienteID); err != nil {
+		writeJSONError(w, http.StatusNotFound, "ambiente not found")
+		return
+	}
+
+	var in struct {
+		IDs []int64 `json:"ids"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
+		writeJSONError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if len(in.IDs) == 0 {
+		writeJSONError(w, http.StatusBadRequest, "ids is required")
+		return
+	}
+
+	imagenes, err := h.Service.ReorderImagenes(ambienteID, in.IDs)
+	if err != nil {
+		if errors.Is(err, sportslot.ErrNotFound) {
+			writeJSONError(w, http.StatusNotFound, "imagen not found for this ambiente")
+			return
+		}
+		writeJSONError(w, http.StatusInternalServerError, "failed")
+		return
+	}
+	h.broadcastAmbienteInfo(ambienteID)
+	writeJSON(w, http.StatusOK, imagenes)
+}
+
 func (h *SportSlotHandlers) broadcastAmbienteInfo(ambienteID int64) {
 	info, err := h.Service.GetAmbienteInfo(ambienteID)
 	if err != nil || info == nil {

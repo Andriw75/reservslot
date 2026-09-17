@@ -217,11 +217,11 @@
   font-size: 13px;
 }
 
-.options {
+.attributes {
   margin-top: 18px;
 }
 
-.options-title {
+.attributes-title {
   display: block;
   font-size: 12px;
   font-weight: 600;
@@ -229,25 +229,35 @@
   margin-bottom: 8px;
 }
 
-.options-list {
+.attributes-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.option-chip {
-  padding: 4px 10px;
-  border-radius: 999px;
+.attribute-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
   background: var(--bg);
-  color: var(--text-muted);
+}
+
+.attribute-key {
   font-size: 12px;
   font-weight: 600;
+  color: var(--text-secondary);
   text-transform: capitalize;
 }
 
-.option-chip--on {
-  background: var(--primary-light);
+.attribute-value {
+  font-size: 13px;
+  font-weight: 600;
   color: var(--primary);
+  text-align: right;
+  word-break: break-word;
 }
 
 .schedule-section {
@@ -276,16 +286,17 @@
 
 .schedule-scroll {
   overflow-x: auto;
+  overflow-y: visible;
 }
 
 .schedule {
-  min-width: 760px;
+  min-width: 820px;
 }
 
 .schedule-days-row {
   display: grid;
-  grid-template-columns: 52px repeat(7, 1fr);
-  gap: 4px;
+  grid-template-columns: 56px repeat(7, minmax(0, 1fr));
+  gap: 6px;
 }
 
 .schedule-corner {
@@ -320,8 +331,8 @@
 
 .schedule-grid {
   display: grid;
-  grid-template-columns: 52px repeat(7, 1fr);
-  gap: 4px;
+  grid-template-columns: 56px repeat(7, minmax(0, 1fr));
+  gap: 6px;
   margin-top: 6px;
 }
 
@@ -332,6 +343,7 @@
 
 .schedule-hour {
   height: 34px;
+  flex: 0 0 34px;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
@@ -353,21 +365,92 @@
 
 .block {
   position: absolute;
-  top: 2px;
-  height: 30px;
-  border-radius: 6px;
-  background: var(--secondary);
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
+  left: 3px;
+  right: 3px;
+  min-height: 20px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 4px;
-  overflow: hidden;
-  white-space: nowrap;
-  cursor: default;
+  gap: 1px;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--secondary);
+  color: #fff;
   box-shadow: var(--shadow);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease;
+}
+
+.block-time {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.block-range {
+  font-size: 9px;
+  font-weight: 500;
+  opacity: 0.85;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.block--open-start {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top-style: dashed;
+  border-top-color: rgba(255, 255, 255, 0.65);
+}
+
+.block--open-end {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-style: dashed;
+  border-bottom-color: rgba(255, 255, 255, 0.65);
+}
+
+.block--active {
+  filter: brightness(1.15) saturate(1.15);
+  box-shadow:
+    0 0 0 2px var(--primary-light),
+    0 8px 18px rgba(15, 23, 42, 0.28);
+  transform: scale(1.02);
+  z-index: 5;
+}
+
+.block-tooltip {
+  position: fixed;
+  z-index: 1200;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 280px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.96);
+  color: #fff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.block-tooltip-line {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.block-tooltip-line:first-child {
+  font-weight: 700;
+}
+
+.block-tooltip-line:last-child:not(:first-child) {
+  color: #fbbf24;
 }
 
 @media (max-width: 900px) {

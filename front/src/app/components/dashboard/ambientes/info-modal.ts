@@ -1,24 +1,19 @@
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AmbientesService } from '../../../services/ambientes.service';
 import { SportslotStoreService } from '../../../services/sportslot-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { ImageManagerComponent } from '../../../common/image-manager/image-manager';
 import type { ImagenesApi } from '../../../common/image-manager/image-manager';
 import type { Ambiente } from '../../../models/ambiente';
-
-const DEFAULT_OPTIONS: Record<string, boolean> = {
-  techado: false,
-  iluminacion: false,
-  vestuarios: false,
-  gradas: false,
-};
+import type { AtributoItem } from '../../../models/ambiente-info';
 
 @Component({
   selector: 'app-ambiente-info-modal',
   templateUrl: './info-modal.html',
   styleUrl: './info-modal.css',
-  imports: [FormsModule, ImageManagerComponent],
+  imports: [FormsModule, DragDropModule, ImageManagerComponent],
 })
 export class AmbienteInfoModalComponent {
   private service = inject(AmbientesService);
@@ -31,6 +26,7 @@ export class AmbienteInfoModalComponent {
   infoApi: ImagenesApi = {
     uploadImagenes: (id, files) => this.service.uploadImagenes(id, files),
     deleteImagen: (id, imagenId) => this.service.deleteImagen(id, imagenId),
+    reorderImagenes: (id, ids) => this.service.reorderImagenes(id, ids),
   };
 
   saving = signal(false);
@@ -42,14 +38,14 @@ export class AmbienteInfoModalComponent {
     alto: number | null;
     aforo: number | null;
     descripcion: string;
-    opciones_adicionales: Record<string, boolean>;
   } = {
     ancho: null,
     alto: null,
     aforo: null,
     descripcion: '',
-    opciones_adicionales: { ...DEFAULT_OPTIONS },
   };
+
+  atributos = signal<AtributoItem[]>([]);
 
   info = computed(() => this.store.info(this.ambiente().id));
 
@@ -76,17 +72,31 @@ export class AmbienteInfoModalComponent {
         alto: toNumber(data['alto']),
         aforo: toNumber(data['aforo']),
         descripcion: typeof data['descripcion'] === 'string' ? data['descripcion'] : '',
-        opciones_adicionales: {
-          ...DEFAULT_OPTIONS,
-          ...(data['opciones_adicionales'] ?? {}),
-        },
       };
+      this.atributos.set(readAtributos(data));
       this.dataLoaded.set(true);
     });
   }
 
-  optionKeys(): string[] {
-    return Object.keys(this.form.opciones_adicionales);
+  addAtributo(): void {
+    this.atributos.update((list) => [...list, { clave: '', valor: '' }]);
+  }
+
+  removeAtributo(index: number): void {
+    this.atributos.update((list) => list.filter((_, i) => i !== index));
+  }
+
+  updateAtributo(index: number, field: 'clave' | 'valor', value: string): void {
+    this.atributos.update((list) =>
+      list.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
+    );
+  }
+
+  dropAtributo(event: CdkDragDrop<AtributoItem[]>): void {
+    if (event.previousIndex === event.currentIndex) return;
+    const list = [...this.atributos()];
+    moveItemInArray(list, event.previousIndex, event.currentIndex);
+    this.atributos.set(list);
   }
 
   close(): void {
@@ -101,12 +111,16 @@ export class AmbienteInfoModalComponent {
     this.saving.set(true);
     this.error.set('');
 
+    const atributos = this.atributos()
+      .map((item) => ({ clave: item.clave.trim(), valor: item.valor.trim() }))
+      .filter((item) => item.clave.length > 0 || item.valor.length > 0);
+
     const data: Record<string, unknown> = {
       ancho: this.form.ancho,
       alto: this.form.alto,
       aforo: this.form.aforo,
       descripcion: this.form.descripcion,
-      opciones_adicionales: this.form.opciones_adicionales,
+      atributos,
     };
 
     this.service.updateInfo(this.ambiente().id, { data, activo: true }).subscribe({
@@ -121,4 +135,24 @@ export class AmbienteInfoModalComponent {
       },
     });
   }
+}
+
+function readAtributos(data: Record<string, unknown>): AtributoItem[] {
+  const attrs = data['atributos'];
+  if (Array.isArray(attrs)) {
+    return attrs
+      .map((item) => item as { clave?: unknown; valor?: unknown })
+      .filter((item) => item && typeof item.clave === 'string')
+      .map((item) => ({ clave: String(item.clave), valor: String(item.valor ?? '') }));
+  }
+
+  const legacy = data['opciones_adicionales'];
+  if (legacy && typeof legacy === 'object') {
+    return Object.entries(legacy as Record<string, unknown>).map(([clave, valor]) => ({
+      clave,
+      valor: valor ? 'Sí' : 'No',
+    }));
+  }
+
+  return [];
 }

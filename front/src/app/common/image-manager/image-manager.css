@@ -78,6 +78,24 @@
   box-shadow: var(--shadow-lg);
 }
 
+.image-card.cdk-drag-preview {
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.28);
+  border-radius: 10px;
+  opacity: 0.95;
+}
+
+.image-card.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.image-card.cdk-drag-animating {
+  transition: transform 0.2s ease;
+}
+
+.image-grid.cdk-drop-list-dragging .image-card:not(.cdk-drag-placeholder) {
+  transition: transform 0.2s ease;
+}
+
 .image-card.dragging {
   opacity: 0.45;
   transform: scale(0.95);
@@ -108,6 +126,7 @@
   position: absolute;
   top: 6px;
   left: 6px;
+  z-index: 3;
   font-size: 12px;
   line-height: 1;
   color: #475569;
@@ -122,6 +141,7 @@
   position: absolute;
   bottom: 6px;
   left: 6px;
+  z-index: 2;
   padding: 2px 8px;
   font-size: 10px;
   font-weight: 700;
@@ -151,6 +171,7 @@
   justify-content: center;
   background: rgba(15, 23, 42, 0.35);
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.15s ease;
 }
 
@@ -159,6 +180,7 @@
 }
 
 .image-remove {
+  pointer-events: auto;
   width: 30px;
   height: 30px;
   border: none;

@@ -1,4 +1,5 @@
 import { Component, effect, inject, input, OnDestroy, output, signal } from '@angular/core';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { firstValueFrom } from 'rxjs';
 import type { Observable } from 'rxjs';
 import { imagenUrl } from '../../models/imagen';
@@ -18,6 +19,7 @@ export interface ImagenCard {
 export interface ImagenesApi {
   uploadImagenes(id: number, files: File[]): Observable<Imagen[]>;
   deleteImagen(id: number, imagenId: number): Observable<void>;
+  reorderImagenes(id: number, ids: number[]): Observable<Imagen[]>;
 }
 
 const STATUS_LABEL: Record<CardStatus, string> = {
@@ -30,6 +32,7 @@ const STATUS_LABEL: Record<CardStatus, string> = {
   selector: 'app-image-manager',
   templateUrl: './image-manager.html',
   styleUrl: './image-manager.css',
+  imports: [DragDropModule],
 })
 export class ImageManagerComponent implements OnDestroy {
   private toast = inject(ToastService);
@@ -43,6 +46,7 @@ export class ImageManagerComponent implements OnDestroy {
   cards = signal<ImagenCard[]>([]);
   applying = signal(false);
   zoneActive = signal(false);
+  orderDirty = signal(false);
 
   private nextKey = 1;
   private prevCards: ImagenCard[] = [];
@@ -131,6 +135,15 @@ export class ImageManagerComponent implements OnDestroy {
     input.value = '';
   }
 
+  dropCard(event: CdkDragDrop<ImagenCard[]>): void {
+    if (event.previousIndex === event.currentIndex) return;
+    const list = [...this.cards()];
+    moveItemInArray(list, event.previousIndex, event.currentIndex);
+    this.cards.set(list);
+    this.prevCards = list;
+    this.orderDirty.set(true);
+  }
+
   removeOrRestore(card: ImagenCard): void {
     this.cards.update((list) => {
       if (card.status === 'pending-upload') {
@@ -138,10 +151,12 @@ export class ImageManagerComponent implements OnDestroy {
         return list.filter((item) => item.key !== card.key);
       }
       if (card.status === 'uploaded') {
+        this.orderDirty.set(true);
         return list.map((item) =>
           item.key === card.key ? { ...item, status: 'pending-delete' as CardStatus } : item,
         );
       }
+      this.orderDirty.set(true);
       return list.map((item) =>
         item.key === card.key ? { ...item, status: 'uploaded' as CardStatus } : item,
       );
@@ -181,6 +196,7 @@ export class ImageManagerComponent implements OnDestroy {
       status: 'pending-upload',
     }));
     this.cards.update((list) => [...list, ...newCards]);
+    this.orderDirty.set(true);
   }
 
   private hasFiles(event: DragEvent): boolean {
@@ -197,13 +213,14 @@ export class ImageManagerComponent implements OnDestroy {
   }
 
   get hasPending(): boolean {
-    return this.pendingUploads + this.pendingDeletes > 0;
+    return this.pendingUploads + this.pendingDeletes > 0 || this.orderDirty();
   }
 
   get pendingSummary(): string {
     const parts: string[] = [];
     if (this.pendingUploads) parts.push(`${this.pendingUploads} subir`);
     if (this.pendingDeletes) parts.push(`${this.pendingDeletes} eliminar`);
+    if (this.orderDirty() && !parts.length) parts.push('reordenar');
     return parts.length ? `Aplicar cambios (${parts.join(' · ')})` : 'Aplicar cambios';
   }
 
@@ -216,6 +233,7 @@ export class ImageManagerComponent implements OnDestroy {
       const toDelete = current.filter((card) => card.status === 'pending-delete');
       const uploadedKeys = new Set(toUpload.map((card) => card.key));
       const deletedKeys = new Set(toDelete.map((card) => card.key));
+      const shouldReorder = this.orderDirty();
 
       for (const card of toDelete) {
         await firstValueFrom(this.api().deleteImagen(id, card.id!));
@@ -229,12 +247,22 @@ export class ImageManagerComponent implements OnDestroy {
         );
       }
 
+      if (shouldReorder) {
+        const ids = this.cards()
+          .filter((card) => card.status === 'uploaded' && card.id !== null)
+          .map((card) => card.id!);
+        if (ids.length) {
+          await firstValueFrom(this.api().reorderImagenes(id, ids));
+        }
+      }
+
       this.revokeLocalUrls(toUpload);
       const next = this.cards().filter(
         (card) => !uploadedKeys.has(card.key) && !deletedKeys.has(card.key),
       );
       this.prevCards = next;
       this.cards.set(next);
+      this.orderDirty.set(false);
       this.toast.success('Cambios de imágenes aplicados');
       this.imagesApplied.emit();
     } catch {
@@ -250,6 +278,7 @@ export class ImageManagerComponent implements OnDestroy {
     const cards = this.toCards(this.imagenes());
     this.prevCards = cards;
     this.cards.set(cards);
+    this.orderDirty.set(false);
     this.toast.success('Cambios descartados');
   }
 }

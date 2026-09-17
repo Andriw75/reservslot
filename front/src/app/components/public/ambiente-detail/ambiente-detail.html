@@ -70,14 +70,15 @@
           <p class="description">{{ description() }}</p>
         }
 
-        @if (options().length) {
-          <div class="options">
-            <span class="options-title">Opciones adicionales</span>
-            <div class="options-list">
-              @for (option of options(); track option.label) {
-                <span class="option-chip" [class.option-chip--on]="option.value === 'Sí'">
-                  {{ option.label }}{{ option.value === 'Sí' ? ' ✓' : '' }}
-                </span>
+        @if (attributes().length) {
+          <div class="attributes">
+            <span class="attributes-title">Atributos</span>
+            <div class="attributes-list">
+              @for (attribute of attributes(); track attribute.clave) {
+                <div class="attribute-item">
+                  <span class="attribute-key">{{ attribute.clave }}</span>
+                  <span class="attribute-value">{{ attribute.valor }}</span>
+                </div>
               }
             </div>
           </div>
@@ -116,14 +117,23 @@
                 @for (hour of schedule().hours; track hour) {
                   <div class="schedule-cell"></div>
                 }
-                @for (block of blocksForDay(dayIndex); track block.id) {
+                @for (
+                  segment of segmentsForDay(dayIndex);
+                  track segment.key + '-' + segment.dayIndex
+                ) {
                   <span
                     class="block"
-                    [style.left.%]="block.left"
-                    [style.width.%]="block.width"
-                    [title]="block.subtitle"
+                    [class.block--active]="isHighlighted(segment)"
+                    [class.block--open-start]="!segment.isStart"
+                    [class.block--open-end]="!segment.isEnd"
+                    [style.top.%]="segment.top"
+                    [style.height.%]="segment.height"
+                    (mouseenter)="onSegmentEnter($event, segment)"
+                    (mousemove)="onSegmentMove($event, segment)"
+                    (mouseleave)="onSegmentLeave()"
                   >
-                    {{ block.label }}
+                    <span class="block-time">{{ segment.label }}</span>
+                    <span class="block-range">{{ segment.startLabel }}–{{ segment.endLabel }}</span>
                   </span>
                 }
               </div>
@@ -138,3 +148,11 @@
     </section>
   }
 </main>
+
+@if (tooltip(); as tip) {
+  <div class="block-tooltip" [style.left.px]="tip.x + 14" [style.top.px]="tip.y + 14">
+    @for (line of tip.lines; track line) {
+      <span class="block-tooltip-line">{{ line }}</span>
+    }
+  </div>
+}

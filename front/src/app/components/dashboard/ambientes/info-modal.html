@@ -32,20 +32,51 @@
             </div>
           </div>
 
-          <div class="options">
-            <span class="options-title">Opciones adicionales</span>
-            <div class="options-grid">
-              @for (key of optionKeys(); track key) {
-                <label class="option">
-                  <input
-                    type="checkbox"
-                    [(ngModel)]="form.opciones_adicionales[key]"
-                    [name]="'opt_' + key"
-                  />
-                  {{ key }}
-                </label>
-              }
+          <div class="attributes">
+            <div class="attributes-head">
+              <span class="attributes-title">Atributos</span>
+              <button type="button" class="btn-add" (click)="addAtributo()">
+                + Agregar atributo
+              </button>
             </div>
+
+            @if (atributos().length) {
+              <div class="attributes-list" cdkDropList (cdkDropListDropped)="dropAtributo($event)">
+                @for (item of atributos(); track $index; let i = $index) {
+                  <div class="attribute-row" cdkDrag>
+                    <span class="attribute-drag" cdkDragHandle title="Arrastrar para reordenar"
+                      >⠿</span
+                    >
+                    <input
+                      type="text"
+                      placeholder="Clave"
+                      [ngModel]="item.clave"
+                      (ngModelChange)="updateAtributo(i, 'clave', $event)"
+                      [name]="'attr_clave_' + i"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Valor"
+                      [ngModel]="item.valor"
+                      (ngModelChange)="updateAtributo(i, 'valor', $event)"
+                      [name]="'attr_valor_' + i"
+                    />
+                    <button
+                      type="button"
+                      class="attribute-remove"
+                      title="Quitar atributo"
+                      (click)="removeAtributo(i)"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="attributes-empty">
+                Sin atributos. Agrega clave y valor; se guardan como JSON en el ambiente.
+              </p>
+            }
           </div>
 
           <div class="images-section">

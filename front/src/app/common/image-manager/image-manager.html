@@ -9,14 +9,21 @@
   </div>
 
   @if (cards().length > 0) {
-    <div class="image-grid">
+    <div
+      class="image-grid"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="dropCard($event)"
+    >
       @for (card of cards(); track card.key) {
         <div
           class="image-card"
+          cdkDrag
           [class.card--uploaded]="card.status === 'uploaded'"
           [class.card--pending]="card.status === 'pending-upload'"
           [class.card--deleted]="card.status === 'pending-delete'"
         >
+          <span class="drag-handle" cdkDragHandle title="Arrastrar para reordenar">⠿</span>
           <img [src]="card.url" alt="imagen" />
           <span
             class="image-status"

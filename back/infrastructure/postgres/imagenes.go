@@ -120,6 +120,42 @@ func (r *ImagenRepo) DeleteByID(id int64) (*sportslot.Imagen, error) {
 	return img, nil
 }
 
+// UpdateOrden reasigna el orden 0..n-1 según el orden de ids recibido.
+// El índice único (ambiente_id, orden) obliga a mover los valores a un rango
+// temporal antes de asignar los definitivos.
+func (r *ImagenRepo) UpdateOrden(ambienteID int64, ids []int64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	tx, err := r.db.Pool.Begin(ctx)
+	if err != nil {
+		return mapErr(err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+
+	if _, err := tx.Exec(ctx,
+		`UPDATE imagenes SET orden = orden + 100000 WHERE ambiente_id = $1`, ambienteID,
+	); err != nil {
+		return mapErr(err)
+	}
+
+	for i, id := range ids {
+		tag, err := tx.Exec(ctx,
+			`UPDATE imagenes SET orden = $3 WHERE id = $1 AND ambiente_id = $2`, id, ambienteID, i)
+		if err != nil {
+			return mapErr(err)
+		}
+		if tag.RowsAffected() == 0 {
+			return sportslot.ErrNotFound
+		}
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return mapErr(err)
+	}
+	return nil
+}
+
 func prefix(kind string, id int64) string {
 	return kind + "_" + strconv.FormatInt(id, 10)
 }

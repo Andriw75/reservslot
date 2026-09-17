@@ -3,7 +3,11 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import type { Ambiente, AmbienteInput } from '../models/ambiente';
-import type { AmbienteInfo, AmbienteInfoInput, AmbienteInfoResponse } from '../models/ambiente-info';
+import type {
+  AmbienteInfo,
+  AmbienteInfoInput,
+  AmbienteInfoResponse,
+} from '../models/ambiente-info';
 import type { Imagen } from '../models/imagen';
 
 @Injectable({ providedIn: 'root' })
@@ -49,5 +53,9 @@ export class AmbientesService {
 
   deleteImagen(id: number, imagenId: number): Observable<void> {
     return this.http.delete<void>(`${this.api}/ambientes/${id}/imagenes/${imagenId}`);
+  }
+
+  reorderImagenes(id: number, ids: number[]): Observable<Imagen[]> {
+    return this.http.put<Imagen[]>(`${this.api}/ambientes/${id}/imagenes/orden`, { ids });
   }
 }
