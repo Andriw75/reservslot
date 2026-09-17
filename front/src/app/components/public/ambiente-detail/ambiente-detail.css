@@ -8,18 +8,38 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 32px;
+  padding: 14px 32px;
   background: var(--primary);
   color: white;
 }
 
 .brand {
   display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.5px;
+}
+
+.brand-text {
+  display: flex;
   flex-direction: column;
 }
 
 .brand-name {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.3px;
   color: white;
@@ -28,20 +48,6 @@
 .brand-tagline {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.75);
-}
-
-.login-link {
-  padding: 8px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: var(--radius);
-  color: white;
-  font-size: 13px;
-  font-weight: 600;
-  transition: background 0.15s;
-}
-
-.login-link:hover {
-  background: rgba(255, 255, 255, 0.15);
 }
 
 .portal {
@@ -284,9 +290,12 @@
   color: var(--text-muted);
 }
 
+/* La grilla tiene su propio scroll vertical (con la cabecera de días fija) y
+   horizontal. No se usa `overflow-y: visible` porque con `overflow-x: auto`
+   el navegador lo computa como `auto` y rompe el flujo del scroll. */
 .schedule-scroll {
-  overflow-x: auto;
-  overflow-y: visible;
+  overflow: auto;
+  max-height: 70vh;
 }
 
 .schedule {
@@ -297,6 +306,12 @@
   display: grid;
   grid-template-columns: 56px repeat(7, minmax(0, 1fr));
   gap: 6px;
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  background: var(--bg-card);
+  padding-bottom: 6px;
+  box-shadow: 0 6px 10px -8px rgba(15, 23, 42, 0.35);
 }
 
 .schedule-corner {
@@ -388,18 +403,37 @@
 }
 
 .block-time {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1.1;
   white-space: nowrap;
 }
 
 .block-range {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 500;
   opacity: 0.85;
   line-height: 1.1;
   white-space: nowrap;
+}
+
+/* Bloques de menos de una hora: solo la hora de inicio. */
+.block--compact .block-range {
+  display: none;
+}
+
+.block--compact .block-time {
+  font-size: 11px;
+}
+
+/* Bloques de menos de media hora: sin texto, la info queda en el tooltip. */
+.block--tiny {
+  padding: 0;
+}
+
+.block--tiny .block-time,
+.block--tiny .block-range {
+  display: none;
 }
 
 .block--open-start {

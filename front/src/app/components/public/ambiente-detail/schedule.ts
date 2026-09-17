@@ -6,6 +6,16 @@ export const DAY_SHORT = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 export const DEFAULT_START_HOUR = 7;
 export const DEFAULT_END_HOUR = 22;
 
+// Alto en píxeles de cada fila de hora. Debe coincidir con `.schedule-cell`
+// y `.schedule-hour` en ambiente-detail.css.
+export const HOUR_HEIGHT = 34;
+
+// Un bloque con menos de una hora de duración no tiene espacio para mostrar
+// hora + rango, así que solo muestra la hora; si dura menos de media hora no
+// muestra texto y la información queda en el tooltip del hover.
+const COMPACT_HOURS = 1;
+const TINY_HOURS = 0.5;
+
 export interface ScheduleSegment {
   key: string;
   ocupacionId: number;
@@ -17,6 +27,8 @@ export interface ScheduleSegment {
   endLabel: string;
   isStart: boolean;
   isEnd: boolean;
+  compact: boolean;
+  tiny: boolean;
   tooltip: string[];
 }
 
@@ -156,6 +168,8 @@ export function buildWeek(ocupaciones: OcupacionLike[], reference = new Date()):
       const isEnd = to === range.fin.getTime();
       if (!isStart || !isEnd) crossesDays.add(key);
 
+      const durationHours = (to - from) / 3600000;
+
       const dayLabel = DAY_NAMES[dayIndex];
       const rangeLabel =
         isStart && isEnd
@@ -173,6 +187,8 @@ export function buildWeek(ocupaciones: OcupacionLike[], reference = new Date()):
         endLabel: isEnd ? finLabel : timeLabel(new Date(to)),
         isStart,
         isEnd,
+        compact: durationHours < COMPACT_HOURS,
+        tiny: durationHours < TINY_HOURS,
         tooltip: [
           rangeLabel,
           `Ocupación: ${dateLabel(range.inicio)} ${inicioLabel} - ${finLabel}`,

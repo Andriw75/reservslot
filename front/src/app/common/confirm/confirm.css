@@ -91,12 +91,12 @@
 .btn--primary {
   background: var(--primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
+  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.28);
 }
 
 .btn--primary:hover {
   background: var(--primaryFocus);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.38);
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.38);
 }
 
 .btn--danger {

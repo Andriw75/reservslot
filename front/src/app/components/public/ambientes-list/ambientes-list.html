@@ -1,41 +1,185 @@
 <header class="portal-header">
   <div class="brand">
-    <span class="brand-name">ReservSlot</span>
-    <span class="brand-tagline">Ambientes deportivos</span>
+    <span class="brand-mark">RS</span>
+    <div class="brand-text">
+      <span class="brand-name">ReservSlot</span>
+      <span class="brand-tagline">Reserva de ambientes deportivos</span>
+    </div>
   </div>
-  <a class="login-link" routerLink="/login">Iniciar sesión</a>
+  <nav class="portal-nav">
+    <a href="#ambientes" (click)="scrollTo($event, 'ambientes')">Ambientes</a>
+    <a href="#como-funciona" (click)="scrollTo($event, 'como-funciona')">Cómo funciona</a>
+  </nav>
 </header>
 
-<main class="portal">
+<main>
   <section class="hero">
-    <h1>Nuestros ambientes</h1>
-    <p>Consulta la disponibilidad de cada ambiente por categoría.</p>
+    <div class="hero-inner">
+      <div class="hero-content">
+        <span class="hero-badge">
+          <span class="badge-dot"></span>
+          Disponibilidad actualizada en vivo
+        </span>
+        <h1>
+          Reserva tu ambiente deportivo
+          <span class="hero-highlight">en segundos</span>
+        </h1>
+        <p class="hero-lead">
+          Mira qué horarios están libres, elige el que más te convenga y confirma tu reserva. Sin
+          llamadas, sin esperas y sin idas y vueltas.
+        </p>
+
+        <div class="hero-actions">
+          <button type="button" class="btn btn--accent" (click)="scrollTo($event, 'ambientes')">
+            Ver ambientes disponibles
+          </button>
+          <button type="button" class="btn btn--ghost" (click)="scrollTo($event, 'como-funciona')">
+            Cómo funciona
+          </button>
+        </div>
+
+        <dl class="hero-stats">
+          <div class="stat">
+            <dt>{{ totalAmbientes() }}</dt>
+            <dd>Ambientes publicados</dd>
+          </div>
+          <div class="stat">
+            <dt>{{ totalCategorias() }}</dt>
+            <dd>Categorías disponibles</dd>
+          </div>
+          <div class="stat">
+            <dt>24/7</dt>
+            <dd>Consulta sin costo</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="mock-calendar">
+          <div class="mock-head">
+            <span class="mock-title">Horario de la semana</span>
+            <span class="mock-live"><span class="badge-dot"></span> en vivo</span>
+          </div>
+          <div class="mock-days">
+            @for (day of ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']; track day) {
+              <span class="mock-day">{{ day }}</span>
+            }
+          </div>
+          <div class="mock-grid">
+            <span class="mock-block mock-block--a"></span>
+            <span class="mock-block mock-block--b"></span>
+            <span class="mock-block mock-block--c"></span>
+          </div>
+          <div class="mock-foot">
+            <span class="mock-chip mock-chip--free">Libre</span>
+            <span class="mock-chip mock-chip--busy">Ocupado</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
-  @if (groups().length === 0) {
-    <div class="empty">Aún no hay ambientes publicados.</div>
-  }
+  <section class="steps" id="como-funciona">
+    <h2 class="section-title">¿Cómo funciona?</h2>
+    <p class="section-subtitle">Tres pasos y ya tienes tu horario reservado.</p>
 
-  @for (group of groups(); track group.categoria?.id ?? 'otros') {
-    @if (hasAmbientes(group)) {
+    <ol class="steps-grid">
+      @for (paso of pasos; track paso.titulo; let i = $index) {
+        <li class="step">
+          <span class="step-number">{{ i + 1 }}</span>
+          <h3>{{ paso.titulo }}</h3>
+          <p>{{ paso.texto }}</p>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="catalog" id="ambientes">
+    <div class="catalog-head">
+      <div>
+        <h2 class="section-title">Nuestros ambientes</h2>
+        <p class="section-subtitle">
+          Explora por categoría y entra al ambiente para ver su horario completo.
+        </p>
+      </div>
+      <span class="catalog-count">
+        {{ totalAmbientes() }} {{ totalAmbientes() === 1 ? 'disponible' : 'disponibles' }}
+      </span>
+    </div>
+
+    @if (groups().length === 0) {
+      <div class="empty">Todavía no hay ambientes publicados. Vuelve a revisar en un momento.</div>
+    }
+
+    @for (group of groups(); track group.categoria?.id ?? 'otros') {
       <section class="category">
         <div class="category-header">
-          <span class="category-dot" [style.background]="categoryColor(group)"></span>
-          <h2>{{ group.categoria?.nombre ?? 'Otros' }}</h2>
+          <div class="category-heading">
+            <span class="category-dot" [style.background]="categoryColor(group)"></span>
+            <div>
+              <h3 class="category-name">{{ group.categoria?.nombre ?? 'Otros' }}</h3>
+              @if (group.categoria?.descripcion) {
+                <p class="category-description">{{ group.categoria?.descripcion }}</p>
+              }
+            </div>
+          </div>
+          <span class="category-count">
+            {{ group.ambientes.length }}
+            {{ group.ambientes.length === 1 ? 'ambiente' : 'ambientes' }}
+          </span>
         </div>
-        @if (group.categoria?.descripcion) {
-          <p class="category-description">{{ group.categoria?.descripcion }}</p>
-        }
 
         <div class="ambientes-grid">
           @for (ambiente of group.ambientes; track ambiente.id) {
-            <a class="ambiente-card" [routerLink]="['/ambientes', ambiente.id]">
-              <span class="ambiente-name">{{ ambiente.nombre }}</span>
-              <span class="ambiente-link">Ver disponibilidad →</span>
+            <a
+              class="ambiente-card"
+              [routerLink]="['/ambientes', ambiente.id]"
+              [style.--card-accent]="categoryColor(group)"
+            >
+              <div class="card-media">
+                @if (ambienteImage(ambiente); as src) {
+                  <img [src]="src" [alt]="ambiente.nombre" loading="lazy" />
+                } @else {
+                  <span class="card-media-empty">{{ ambiente.nombre.charAt(0) }}</span>
+                }
+                @if (!ambiente.activo) {
+                  <span class="card-badge card-badge--off">No disponible</span>
+                }
+              </div>
+
+              <div class="card-body">
+                <span class="card-category">{{ group.categoria?.nombre ?? 'Otros' }}</span>
+                <h4 class="card-name">{{ ambiente.nombre }}</h4>
+                <span class="card-cta">
+                  Ver disponibilidad
+                  <span class="card-cta-arrow">→</span>
+                </span>
+              </div>
             </a>
           }
         </div>
       </section>
     }
-  }
+  </section>
+
+  <section class="cta-band">
+    <div class="cta-band-inner">
+      <div>
+        <h2>Encuentra tu horario y resérvalo</h2>
+        <p>
+          Explora los ambientes disponibles, revisa su horario semanal en vivo y elige el momento
+          que mejor te venga. Sin llamadas ni esperas.
+        </p>
+      </div>
+      <button type="button" class="btn btn--accent" (click)="scrollTo($event, 'ambientes')">
+        Ver ambientes
+      </button>
+    </div>
+  </section>
 </main>
+
+<footer class="portal-footer">
+  <span>ReservSlot</span>
+  <span class="footer-sep">·</span>
+  <span>Reserva de ambientes deportivos</span>
+</footer>

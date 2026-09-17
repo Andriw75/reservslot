@@ -13,6 +13,10 @@ export interface Imagen {
   updated_at: string;
 }
 
+export function imagenArchivoUrl(archivo: string): string {
+  return `${environment.MEDIA_URL}/imagenes/${archivo}`;
+}
+
 export function imagenUrl(imagen: Imagen): string {
-  return `${environment.MEDIA_URL}/imagenes/${imagen.archivo}`;
+  return imagenArchivoUrl(imagen.archivo);
 }

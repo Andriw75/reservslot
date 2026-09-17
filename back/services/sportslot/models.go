@@ -23,6 +23,10 @@ type Ambiente struct {
 	Activo      bool      `json:"activo"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+
+	// ImagenPrincipal es la primera imagen activa del ambiente (según `orden`).
+	// No es una columna: se resuelve con un JOIN en los listados públicos.
+	ImagenPrincipal *string `json:"imagen_principal,omitempty"`
 }
 
 type AmbienteInfo struct {

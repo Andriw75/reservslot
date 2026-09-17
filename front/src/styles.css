@@ -1,14 +1,14 @@
 :root {
   /* Marca */
-  --primary: #4f46e5;
-  --primaryFocus: #4338ca;
-  --primary-light: #e0e7ff;
+  --primary: #0f766e;
+  --primaryFocus: #115e59;
+  --primary-light: #ccfbf1;
 
   /* Acento */
-  --secondary: #06b6d4;
-  --secondaryWeak: #22d3ee;
-  --secondary-strong: #0e7490;
-  --secondary-light: #cffafe;
+  --secondary: #2563eb;
+  --secondaryWeak: #3b82f6;
+  --secondary-strong: #1d4ed8;
+  --secondary-light: #dbeafe;
 
   /* Superficies y texto */
   --bg: #f8fafc;
@@ -19,10 +19,10 @@
   --border: #e2e8f0;
 
   /* Estados */
-  --success: #059669;
-  --success-strong: #047857;
-  --success-light: #d1fae5;
-  --success-text: #065f46;
+  --success: #16a34a;
+  --success-strong: #15803d;
+  --success-light: #dcfce7;
+  --success-text: #15803d;
 
   --danger: #dc2626;
   --danger-strong: #b91c1c;

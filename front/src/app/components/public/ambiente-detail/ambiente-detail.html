@@ -1,9 +1,11 @@
 <header class="portal-header">
   <div class="brand">
-    <a class="brand-name" routerLink="/">ReservSlot</a>
-    <span class="brand-tagline">Ambientes deportivos</span>
+    <a class="brand-mark" routerLink="/">RS</a>
+    <div class="brand-text">
+      <a class="brand-name" routerLink="/">ReservSlot</a>
+      <span class="brand-tagline">Reserva de ambientes deportivos</span>
+    </div>
   </div>
-  <a class="login-link" routerLink="/login">Iniciar sesión</a>
 </header>
 
 <main class="portal">
@@ -132,10 +134,11 @@
                     [class.block--active]="isHighlighted(segment)"
                     [class.block--open-start]="!segment.isStart"
                     [class.block--open-end]="!segment.isEnd"
+                    [class.block--compact]="segment.compact"
+                    [class.block--tiny]="segment.tiny"
                     [style.top.%]="segment.top"
                     [style.height.%]="segment.height"
                     (mouseenter)="onSegmentEnter($event, segment)"
-                    (mousemove)="onSegmentMove($event, segment)"
                     (mouseleave)="onSegmentLeave()"
                   >
                     <span class="block-time">{{ segment.label }}</span>

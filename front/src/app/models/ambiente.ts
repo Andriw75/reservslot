@@ -5,6 +5,7 @@ export interface Ambiente {
   activo: boolean;
   created_at: string;
   updated_at: string;
+  imagen_principal?: string | null;
 }
 
 export interface AmbienteInput {

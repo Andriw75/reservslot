@@ -164,18 +164,31 @@ export class AmbienteDetailComponent {
     this.updateTooltip(event, segment);
   }
 
-  onSegmentMove(event: MouseEvent, segment: ScheduleSegment): void {
-    if (this.hoveredKey() !== segment.key) return;
-    this.updateTooltip(event, segment);
-  }
-
   onSegmentLeave(): void {
     this.hoveredKey.set(null);
     this.tooltip.set(null);
   }
 
+  // El tooltip se ancla a la posición del bloque (no sigue al mouse) para no
+  // disparar detección de cambios en cada movimiento y no trabar el scroll.
   private updateTooltip(event: MouseEvent, segment: ScheduleSegment): void {
-    this.tooltip.set({ x: event.clientX, y: event.clientY, lines: segment.tooltip });
+    const target = event.currentTarget as HTMLElement | null;
+    const rect = target?.getBoundingClientRect();
+    const width = 280;
+    const estimatedHeight = 120;
+    const margin = 14;
+
+    let x = rect ? rect.right + 10 : event.clientX + margin;
+    let y = rect ? rect.top : event.clientY + margin;
+
+    if (x + width > window.innerWidth - margin) {
+      x = rect ? Math.max(margin, rect.left - width - 10) : window.innerWidth - width - margin;
+    }
+
+    const maxY = window.innerHeight - estimatedHeight - margin;
+    y = Math.min(Math.max(y, margin), Math.max(margin, maxY));
+
+    this.tooltip.set({ x, y, lines: segment.tooltip });
   }
 }
 

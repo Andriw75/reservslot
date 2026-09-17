@@ -1,12 +1,18 @@
 import { Component, computed, effect, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SportslotStoreService } from '../../../services/sportslot-store.service';
+import { imagenArchivoUrl } from '../../../models/imagen';
 import type { Ambiente } from '../../../models/ambiente';
 import type { Categoria } from '../../../models/categoria';
 
 export interface CategoriaGroup {
   categoria: Categoria | null;
   ambientes: Ambiente[];
+}
+
+interface Paso {
+  titulo: string;
+  texto: string;
 }
 
 @Component({
@@ -21,23 +27,41 @@ export class AmbientesListComponent {
   categorias = this.store.categorias;
   ambientes = this.store.ambientes;
 
+  readonly pasos: Paso[] = [
+    {
+      titulo: 'Elige la categoría',
+      texto: 'Canchas, piscinas, salas y más. Cada categoría agrupa sus ambientes.',
+    },
+    {
+      titulo: 'Revisa la disponibilidad',
+      texto: 'Mira el horario semanal de cada ambiente, actualizado en tiempo real.',
+    },
+    {
+      titulo: 'Confirma tu horario',
+      texto: 'Selecciona el día y la hora libre que más te convenga, sin llamadas.',
+    },
+  ];
+
+  totalAmbientes = computed(() => this.ambientes().filter((a) => a.activo).length);
+  totalCategorias = computed(() => this.groups().filter((g) => g.ambientes.length > 0).length);
+
   groups = computed<CategoriaGroup[]>(() => {
-    const ambientes = this.ambientes().filter((ambiente) => ambiente.activo);
-    const groups: CategoriaGroup[] = [];
+    const activos = this.ambientes().filter((ambiente) => ambiente.activo);
+    const activas = this.categorias().filter((categoria) => categoria.activo);
 
-    for (const categoria of this.categorias().filter((item) => item.activo)) {
-      groups.push({
+    const grupos: CategoriaGroup[] = activas
+      .map((categoria) => ({
         categoria,
-        ambientes: ambientes.filter((ambiente) => ambiente.categoria_id === categoria.id),
-      });
-    }
+        ambientes: activos.filter((ambiente) => ambiente.categoria_id === categoria.id),
+      }))
+      .filter((grupo) => grupo.ambientes.length > 0);
 
-    const known = new Set(this.categorias().map((categoria) => categoria.id));
-    const orphan = ambientes.filter((ambiente) => !known.has(ambiente.categoria_id));
-    if (orphan.length) {
-      groups.push({ categoria: null, ambientes: orphan });
+    const conocidas = new Set(activas.map((categoria) => categoria.id));
+    const huerfanos = activos.filter((ambiente) => !conocidas.has(ambiente.categoria_id));
+    if (huerfanos.length) {
+      grupos.push({ categoria: null, ambientes: huerfanos });
     }
-    return groups;
+    return grupos;
   });
 
   constructor() {
@@ -52,7 +76,12 @@ export class AmbientesListComponent {
     return group.categoria?.color || 'var(--primary)';
   }
 
-  hasAmbientes(group: CategoriaGroup): boolean {
-    return group.ambientes.length > 0;
+  ambienteImage(ambiente: Ambiente): string | null {
+    return ambiente.imagen_principal ? imagenArchivoUrl(ambiente.imagen_principal) : null;
+  }
+
+  scrollTo(event: Event, id: string): void {
+    event.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
