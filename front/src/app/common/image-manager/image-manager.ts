@@ -53,15 +53,55 @@ export class ImageManagerComponent implements OnDestroy {
       const imagenes = this.imagenes();
       if (imagenes === this.lastImagenes) return;
       this.lastImagenes = imagenes;
-      this.revokeLocalUrls(this.prevCards);
-      const cards = this.toCards(imagenes);
-      this.prevCards = cards;
-      this.cards.set(cards);
+      this.syncFromServer(imagenes);
     });
   }
 
   ngOnDestroy(): void {
     this.revokeLocalUrls(this.cards());
+  }
+
+  // Refresca las tarjetas "en servidor" sin perder las pendientes de subir o
+  // eliminar (por ejemplo cuando llega un evento SSE con la lista actualizada).
+  private syncFromServer(imagenes: Imagen[]): void {
+    const serverIds = new Set(imagenes.map((img) => img.id));
+    const kept: ImagenCard[] = [];
+
+    for (const card of this.cards()) {
+      if (card.status === 'pending-upload') {
+        kept.push(card);
+        continue;
+      }
+      if (card.status === 'pending-delete') {
+        if (card.id !== null && serverIds.has(card.id)) {
+          kept.push(card);
+        } else if (card.url.startsWith('blob:')) {
+          URL.revokeObjectURL(card.url);
+        }
+        continue;
+      }
+      const current = imagenes.find((img) => img.id === card.id);
+      if (current) {
+        kept.push({ ...card, url: imagenUrl(current) });
+      } else if (card.url.startsWith('blob:')) {
+        URL.revokeObjectURL(card.url);
+      }
+    }
+
+    const knownIds = new Set(kept.map((card) => card.id));
+    const added: ImagenCard[] = [...imagenes]
+      .sort((a, b) => a.orden - b.orden)
+      .filter((img) => !knownIds.has(img.id))
+      .map((img) => ({
+        key: this.nextKey++,
+        id: img.id,
+        url: imagenUrl(img),
+        status: 'uploaded' as CardStatus,
+      }));
+
+    const next = [...kept, ...added];
+    this.prevCards = next;
+    this.cards.set(next);
   }
 
   private toCards(imagenes: Imagen[]): ImagenCard[] {
@@ -174,6 +214,8 @@ export class ImageManagerComponent implements OnDestroy {
       const current = this.cards();
       const toUpload = current.filter((card) => card.status === 'pending-upload');
       const toDelete = current.filter((card) => card.status === 'pending-delete');
+      const uploadedKeys = new Set(toUpload.map((card) => card.key));
+      const deletedKeys = new Set(toDelete.map((card) => card.key));
 
       for (const card of toDelete) {
         await firstValueFrom(this.api().deleteImagen(id, card.id!));
@@ -187,9 +229,12 @@ export class ImageManagerComponent implements OnDestroy {
         );
       }
 
-      const remaining = current.filter((card) => card.status === 'uploaded');
-      this.cards.set(remaining);
-      this.prevCards = remaining;
+      this.revokeLocalUrls(toUpload);
+      const next = this.cards().filter(
+        (card) => !uploadedKeys.has(card.key) && !deletedKeys.has(card.key),
+      );
+      this.prevCards = next;
+      this.cards.set(next);
       this.toast.success('Cambios de imágenes aplicados');
       this.imagesApplied.emit();
     } catch {

@@ -1,3 +1,5 @@
+import type { Imagen } from './imagen';
+
 export interface AmbienteInfoData {
   ancho?: number | null;
   alto?: number | null;
@@ -18,4 +20,9 @@ export interface AmbienteInfo {
 export interface AmbienteInfoInput {
   data: AmbienteInfoData;
   activo?: boolean;
+}
+
+export interface AmbienteInfoResponse {
+  info: AmbienteInfo;
+  imagenes: Imagen[];
 }

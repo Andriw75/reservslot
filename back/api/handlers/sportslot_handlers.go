@@ -220,14 +220,18 @@ func (h *SportSlotHandlers) GetAmbienteInfo(w http.ResponseWriter, r *http.Reque
 	info, err := h.Service.GetAmbienteInfo(id)
 	if err != nil {
 		if errors.Is(err, sportslot.ErrNotFound) {
-			// Sin info registrada todavía: devolver objeto vacío.
-			writeJSON(w, http.StatusOK, &sportslot.AmbienteInfo{AmbienteID: id, Data: json.RawMessage(`{}`), Activo: true})
+			info = &sportslot.AmbienteInfo{AmbienteID: id, Data: json.RawMessage(`{}`), Activo: true}
+		} else {
+			writeJSONError(w, http.StatusInternalServerError, "failed")
 			return
 		}
+	}
+	imagenes, err := h.Service.GetAmbienteImagenes(id)
+	if err != nil {
 		writeJSONError(w, http.StatusInternalServerError, "failed")
 		return
 	}
-	writeJSON(w, http.StatusOK, info)
+	writeJSON(w, http.StatusOK, map[string]any{"info": info, "imagenes": imagenes})
 }
 
 func (h *SportSlotHandlers) PostAmbiente(w http.ResponseWriter, r *http.Request) {
@@ -340,8 +344,13 @@ func (h *SportSlotHandlers) UpsertAmbienteInfo(w http.ResponseWriter, r *http.Re
 		writeJSONError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+	imagenes, err := h.Service.GetAmbienteImagenes(id)
+	if err != nil {
+		writeJSONError(w, http.StatusInternalServerError, "failed")
+		return
+	}
 	h.broadcastAmbienteInfo(id)
-	writeJSON(w, http.StatusOK, info)
+	writeJSON(w, http.StatusOK, map[string]any{"info": info, "imagenes": imagenes})
 }
 
 // ---------------------------------------------------------------- Imágenes

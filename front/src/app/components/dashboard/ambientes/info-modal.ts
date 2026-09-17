@@ -93,6 +93,10 @@ export class AmbienteInfoModalComponent {
     this.onClose.emit();
   }
 
+  onImagesApplied(): void {
+    this.store.loadInfo(this.ambiente().id);
+  }
+
   onSubmit(): void {
     this.saving.set(true);
     this.error.set('');

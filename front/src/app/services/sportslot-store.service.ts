@@ -3,7 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../environments/environment';
 import type { Ambiente } from '../models/ambiente';
-import type { AmbienteInfo } from '../models/ambiente-info';
+import type { AmbienteInfo, AmbienteInfoResponse } from '../models/ambiente-info';
 import type { Categoria } from '../models/categoria';
 import type { Imagen } from '../models/imagen';
 import type { Ocupacion } from '../models/ocupacion';
@@ -23,6 +23,21 @@ export interface OcupacionesState {
 const EMPTY_INFO: AmbienteInfoState = { info: null, imagenes: [] };
 const EMPTY_OCUPACIONES: OcupacionesState = { from: '', to: '', data: [] };
 
+function sameJson(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  try {
+    return JSON.stringify(a) === JSON.stringify(b);
+  } catch {
+    return false;
+  }
+}
+
+function sameList<T>(a: T[], b: T[]): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  return a.every((item, index) => sameJson(item, b[index]));
+}
+
 @Injectable({ providedIn: 'root' })
 export class SportslotStoreService {
   private http = inject(HttpClient);
@@ -36,6 +51,7 @@ export class SportslotStoreService {
 
   private coreActive = false;
   private readonly extraTopics = new Map<string, number>();
+  private disconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
     this.sse.events$.subscribe((message) => this.apply(message.event, message.topic, message.data));
@@ -54,16 +70,19 @@ export class SportslotStoreService {
       ambientes: this.http.get<Ambiente[]>(`${this.api}/ambientes`),
     }).subscribe({
       next: ({ categorias, ambientes }) => {
-        this.categorias.set(categorias);
-        this.ambientes.set(ambientes);
+        if (!sameList(this.categorias(), categorias)) this.categorias.set(categorias);
+        if (!sameList(this.ambientes(), ambientes)) this.ambientes.set(ambientes);
       },
     });
   }
 
   loadInfo(ambienteId: number): void {
-    this.http.get<AmbienteInfo>(`${this.api}/ambientes/${ambienteId}/info`).subscribe({
-      next: (info) => this.upsertInfo(ambienteId, info, this.info(ambienteId).imagenes),
-    });
+    this.http
+      .get<AmbienteInfoResponse>(`${this.api}/ambientes/${ambienteId}/info`)
+      .subscribe({
+        next: (response) =>
+          this.upsertInfo(ambienteId, response.info, response.imagenes ?? []),
+      });
   }
 
   loadOcupaciones(ambienteId: number, from?: string, to?: string): void {
@@ -113,6 +132,10 @@ export class SportslotStoreService {
   }
 
   disconnect(): void {
+    if (this.disconnectTimer) {
+      clearTimeout(this.disconnectTimer);
+      this.disconnectTimer = null;
+    }
     this.coreActive = false;
     this.extraTopics.clear();
     this.sse.disconnect();
@@ -127,8 +150,17 @@ export class SportslotStoreService {
     for (const [topic, count] of this.extraTopics) {
       if (count > 0) topics.add(topic);
     }
+    if (this.disconnectTimer) {
+      clearTimeout(this.disconnectTimer);
+      this.disconnectTimer = null;
+    }
     if (topics.size === 0) {
-      this.sse.disconnect();
+      // Diferido: evita reconectar cuando los temas se re-registran en el
+      // mismo ciclo (por ejemplo al reejecutarse un effect).
+      this.disconnectTimer = setTimeout(() => {
+        this.disconnectTimer = null;
+        if (this.extraTopics.size === 0 && !this.coreActive) this.sse.disconnect();
+      }, 0);
       return;
     }
     this.sse.connect([...topics]);
@@ -165,11 +197,13 @@ export class SportslotStoreService {
 
   private applySnapshot(topic: string, data: any): void {
     if (topic === 'categorias') {
-      this.categorias.set((data as Categoria[]) ?? []);
+      const next = (data as Categoria[]) ?? [];
+      if (!sameList(this.categorias(), next)) this.categorias.set(next);
       return;
     }
     if (topic === 'ambientes') {
-      this.ambientes.set((data as Ambiente[]) ?? []);
+      const next = (data as Ambiente[]) ?? [];
+      if (!sameList(this.ambientes(), next)) this.ambientes.set(next);
       return;
     }
 
@@ -196,7 +230,13 @@ export class SportslotStoreService {
   }
 
   private upsertInfo(ambienteId: number, info: AmbienteInfo, imagenes: Imagen[]): void {
-    this.infos.update((map) => ({ ...map, [ambienteId]: { info, imagenes } }));
+    this.infos.update((map) => {
+      const current = map[ambienteId];
+      if (current && sameJson(current.info, info) && sameList(current.imagenes, imagenes)) {
+        return map;
+      }
+      return { ...map, [ambienteId]: { info, imagenes } };
+    });
   }
 
   private upsertOcupacion(topic: string, ocupacion: Ocupacion): void {
@@ -230,30 +270,34 @@ export class SportslotStoreService {
     if (!categoria) return;
     this.categorias.update((list) => {
       const exists = list.some((item) => item.id === categoria.id);
-      return exists
-        ? list.map((item) => (item.id === categoria.id ? categoria : item))
-        : [...list, categoria];
+      if (!exists) return [...list, categoria];
+      return list.map((item) => (item.id === categoria.id ? categoria : item));
     });
   }
 
   private removeCategoria(id: number): void {
     if (Number.isNaN(id)) return;
-    this.categorias.update((list) => list.filter((item) => item.id !== id));
+    this.categorias.update((list) => {
+      if (!list.some((item) => item.id === id)) return list;
+      return list.filter((item) => item.id !== id);
+    });
   }
 
   private upsertAmbiente(ambiente: Ambiente): void {
     if (!ambiente) return;
     this.ambientes.update((list) => {
       const exists = list.some((item) => item.id === ambiente.id);
-      return exists
-        ? list.map((item) => (item.id === ambiente.id ? ambiente : item))
-        : [...list, ambiente];
+      if (!exists) return [...list, ambiente];
+      return list.map((item) => (item.id === ambiente.id ? ambiente : item));
     });
   }
 
   private removeAmbiente(id: number): void {
     if (Number.isNaN(id)) return;
-    this.ambientes.update((list) => list.filter((item) => item.id !== id));
+    this.ambientes.update((list) => {
+      if (!list.some((item) => item.id === id)) return list;
+      return list.filter((item) => item.id !== id);
+    });
   }
 
   private ambienteIdFromTopic(topic: string): number | null {

@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import type { Ambiente, AmbienteInput } from '../models/ambiente';
-import type { AmbienteInfo, AmbienteInfoInput } from '../models/ambiente-info';
+import type { AmbienteInfo, AmbienteInfoInput, AmbienteInfoResponse } from '../models/ambiente-info';
 import type { Imagen } from '../models/imagen';
 
 @Injectable({ providedIn: 'root' })
@@ -31,12 +31,12 @@ export class AmbientesService {
     return this.http.delete<void>(`${this.api}/ambientes/${id}`);
   }
 
-  getInfo(id: number): Observable<AmbienteInfo> {
-    return this.http.get<AmbienteInfo>(`${this.api}/ambientes/${id}/info`);
+  getInfo(id: number): Observable<AmbienteInfoResponse> {
+    return this.http.get<AmbienteInfoResponse>(`${this.api}/ambientes/${id}/info`);
   }
 
-  updateInfo(id: number, input: AmbienteInfoInput): Observable<AmbienteInfo> {
-    return this.http.put<AmbienteInfo>(`${this.api}/ambientes/${id}/info`, input);
+  updateInfo(id: number, input: AmbienteInfoInput): Observable<AmbienteInfoResponse> {
+    return this.http.put<AmbienteInfoResponse>(`${this.api}/ambientes/${id}/info`, input);
   }
 
   uploadImagenes(id: number, files: File[]): Observable<Imagen[]> {
