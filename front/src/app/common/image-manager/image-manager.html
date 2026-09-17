@@ -97,28 +97,26 @@
   </label>
 
   <div class="image-actions">
-    <span class="image-count"
-      >{{ cards().length }} {{ cards().length === 1 ? 'imagen' : 'imágenes' }}</span
+    <button
+      type="button"
+      class="btn btn--discard"
+      [disabled]="applying() || !hasPending"
+      (click)="discardChanges()"
     >
-    @if (hasPending || applying()) {
-      <div class="image-actions--buttons">
-        <button
-          type="button"
-          class="btn btn--discard"
-          [disabled]="applying()"
-          (click)="discardChanges()"
-        >
-          Descartar cambios
-        </button>
-        <button
-          type="button"
-          class="btn btn--apply"
-          [disabled]="applying() || !hasPending"
-          (click)="applyImages()"
-        >
-          {{ applying() ? 'Aplicando...' : pendingSummary }}
-        </button>
-      </div>
-    }
+      Descartar cambios
+    </button>
+    <div class="image-actions--buttons">
+      <span class="image-count"
+        >{{ cards().length }} {{ cards().length === 1 ? 'imagen' : 'imágenes' }}</span
+      >
+      <button
+        type="button"
+        class="btn btn--apply"
+        [disabled]="applying() || !hasPending"
+        (click)="applyImages()"
+      >
+        {{ applying() ? 'Aplicando...' : pendingSummary }}
+      </button>
+    </div>
   </div>
 </div>

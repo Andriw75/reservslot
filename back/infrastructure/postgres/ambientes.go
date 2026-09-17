@@ -93,3 +93,32 @@ func (r *AmbienteRepo) Delete(id int64) error {
 	}
 	return nil
 }
+
+// DeleteCascade elimina el ambiente y sus ocupaciones en una sola transacción.
+func (r *AmbienteRepo) DeleteCascade(id int64) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	tx, err := r.db.Pool.Begin(ctx)
+	if err != nil {
+		return mapErr(err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+
+	if _, err := tx.Exec(ctx, `DELETE FROM ocupaciones WHERE ambiente_id = $1`, id); err != nil {
+		return mapErr(err)
+	}
+
+	tag, err := tx.Exec(ctx, `DELETE FROM ambientes WHERE id = $1`, id)
+	if err != nil {
+		return mapErr(err)
+	}
+	if tag.RowsAffected() == 0 {
+		return sportslot.ErrNotFound
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return mapErr(err)
+	}
+	return nil
+}

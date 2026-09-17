@@ -43,6 +43,26 @@ func (s *ServicioSportSlot) GetOcupaciones(ambienteID int64, from, to time.Time)
 	return s.Ocupaciones.ListByAmbienteIDRange(ambienteID, from, to)
 }
 
+func (s *ServicioSportSlot) CountOcupaciones(ambienteID int64) (int, error) {
+	return s.Ocupaciones.CountByAmbienteID(ambienteID)
+}
+
+// DeleteAmbiente elimina el ambiente. Si tiene ocupaciones y cascade es false
+// devuelve ErrHasOcupaciones para que la capa HTTP pida confirmación explícita.
+func (s *ServicioSportSlot) DeleteAmbiente(ambienteID int64, cascade bool) error {
+	total, err := s.Ocupaciones.CountByAmbienteID(ambienteID)
+	if err != nil {
+		return err
+	}
+	if total > 0 && !cascade {
+		return ErrHasOcupaciones
+	}
+	if cascade {
+		return s.Ambientes.DeleteCascade(ambienteID)
+	}
+	return s.Ambientes.Delete(ambienteID)
+}
+
 func (s *ServicioSportSlot) SemanaActual(now time.Time) TimeRange {
 	return WeekRangeAmericaLima(now)
 }

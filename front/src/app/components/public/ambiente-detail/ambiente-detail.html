@@ -9,8 +9,14 @@
 <main class="portal">
   <a class="back-link" routerLink="/">← Volver al listado</a>
 
-  @if (notFound()) {
-    <div class="empty">El ambiente solicitado no existe.</div>
+  @if (notFound() || removed()) {
+    <div class="empty">
+      {{
+        removed()
+          ? 'Este ambiente fue eliminado. Te devolvimos al listado.'
+          : 'El ambiente solicitado no existe.'
+      }}
+    </div>
   } @else {
     <section class="detail-header">
       <div>

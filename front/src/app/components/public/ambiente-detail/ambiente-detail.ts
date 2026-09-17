@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SportslotStoreService } from '../../../services/sportslot-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { imagenUrl } from '../../../models/imagen';
 import type { AmbienteInfoData } from '../../../models/ambiente-info';
 import type { Imagen } from '../../../models/imagen';
@@ -32,6 +33,8 @@ interface TooltipState {
 })
 export class AmbienteDetailComponent {
   private store = inject(SportslotStoreService);
+  private toast = inject(ToastService);
+  private router = inject(Router);
 
   id = input.required<string>();
 
@@ -48,6 +51,9 @@ export class AmbienteDetailComponent {
 
   activeImage = signal(0);
   notFound = signal(false);
+  removed = signal(false);
+
+  private hadAmbiente = false;
 
   schedule = computed(() => buildWeek(this.ocupaciones().data));
   weekLabel = computed(() => formatRangeLabel(this.ocupaciones().from, this.ocupaciones().to));
@@ -125,9 +131,23 @@ export class AmbienteDetailComponent {
     });
 
     effect(() => {
-      if (this.store.ambientes().length && !this.ambiente()) {
-        this.notFound.set(true);
+      const current = this.ambiente();
+
+      if (current) {
+        this.hadAmbiente = true;
+        this.removed.set(false);
+        return;
       }
+      if (!this.store.catalogReady()) return;
+
+      if (this.hadAmbiente) {
+        // El ambiente existía y dejó de estar disponible: fue eliminado en vivo.
+        this.removed.set(true);
+        this.toast.error('Este ambiente fue eliminado por otro usuario');
+        void this.router.navigate(['/']);
+        return;
+      }
+      this.notFound.set(true);
     });
   }
 

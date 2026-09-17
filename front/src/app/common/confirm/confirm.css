@@ -1,7 +1,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,12 +30,12 @@
 }
 
 .dialog {
-  background: var(--color-surface, #fff);
+  background: var(--bg-card);
   border-radius: 14px;
   padding: 28px 32px 24px;
   max-width: 400px;
   width: 90%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-lg);
   animation: scaleIn 0.2s ease;
 }
 
@@ -43,18 +43,19 @@
   margin: 0 0 6px;
   font-size: 18px;
   font-weight: 700;
-  color: var(--text, #111);
+  color: var(--text);
 }
 
 .dialog p {
   margin: 0 0 24px;
   font-size: 14px;
   line-height: 1.55;
-  color: var(--text-muted, #6b7280);
+  color: var(--text-secondary);
 }
 
 .actions {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
@@ -78,43 +79,44 @@
 }
 
 .btn--secondary {
-  background: var(--bg, #f3f4f6);
-  color: var(--text, #374151);
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
 .btn--secondary:hover {
-  background: #e5e7eb;
+  background: var(--border);
 }
 
 .btn--primary {
-  background: var(--primary, #1e3a5f);
+  background: var(--primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(30, 58, 95, 0.25);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
 }
 
 .btn--primary:hover {
-  background: var(--primaryFocus, #162d4a);
-  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.35);
+  background: var(--primaryFocus);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.38);
 }
 
 .btn--danger {
-  background: var(--color-danger, #ef4444);
+  background: var(--danger);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.28);
 }
 
 .btn--danger:hover {
-  background: #dc2626;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+  background: var(--danger-strong);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.38);
 }
 
 .btn--warning {
-  background: #f59e0b;
+  background: var(--warning);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.28);
 }
 
 .btn--warning:hover {
-  background: #d97706;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+  background: var(--warning-strong);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.38);
 }

@@ -64,7 +64,7 @@ func mapErr(err error) error {
 		switch pgErr.Code {
 		case "23P01": // exclusion_violation (ocupaciones_no_solapadas)
 			return sportslot.ErrOverlap
-		case "23503": // foreign_key_violation
+		case "23503": // foreign_key_violation (p. ej. ambiente con ocupaciones)
 			return fmt.Errorf("%w: %s", ErrConflict, pgErr.ConstraintName)
 		case "23505": // unique_violation
 			return fmt.Errorf("%w: %s", ErrConflict, pgErr.ConstraintName)

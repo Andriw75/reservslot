@@ -65,13 +65,13 @@
 }
 
 .badge--activo {
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--success-light);
+  color: var(--success-text);
 }
 
 .badge--inactivo {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: var(--danger-light);
+  color: var(--danger-text);
 }
 
 .btn-icon {

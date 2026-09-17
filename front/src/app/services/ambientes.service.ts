@@ -31,8 +31,9 @@ export class AmbientesService {
     return this.http.put<Ambiente>(`${this.api}/ambientes/${id}`, input);
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.api}/ambientes/${id}`);
+  delete(id: number, cascade = false): Observable<void> {
+    const url = `${this.api}/ambientes/${id}${cascade ? '?cascade=true' : ''}`;
+    return this.http.delete<void>(url);
   }
 
   getInfo(id: number): Observable<AmbienteInfoResponse> {

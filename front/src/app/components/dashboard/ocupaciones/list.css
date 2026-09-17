@@ -12,8 +12,8 @@
 .notice {
   margin-bottom: 16px;
   padding: 10px 14px;
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--warning-light);
+  color: var(--warning-text);
   border-radius: var(--radius);
   font-size: 13px;
   font-weight: 500;
@@ -102,13 +102,13 @@
 }
 
 .badge--activo {
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--success-light);
+  color: var(--success-text);
 }
 
 .badge--inactivo {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: var(--danger-light);
+  color: var(--danger-text);
 }
 
 .btn-icon {

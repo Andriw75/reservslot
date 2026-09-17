@@ -1,17 +1,45 @@
 :root {
-  --primary: #1e3a5f;
-  --primaryFocus: #162d4a;
-  --secondary: #f97316;
-  --secondaryWeak: #fb923c;
-  --bg: #f1f5f9;
+  /* Marca */
+  --primary: #4f46e5;
+  --primaryFocus: #4338ca;
+  --primary-light: #e0e7ff;
+
+  /* Acento */
+  --secondary: #06b6d4;
+  --secondaryWeak: #22d3ee;
+  --secondary-strong: #0e7490;
+  --secondary-light: #cffafe;
+
+  /* Superficies y texto */
+  --bg: #f8fafc;
   --bg-card: #ffffff;
   --text: #1e293b;
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
   --border: #e2e8f0;
-  --primary-light: #dbeafe;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  /* Estados */
+  --success: #059669;
+  --success-strong: #047857;
+  --success-light: #d1fae5;
+  --success-text: #065f46;
+
+  --danger: #dc2626;
+  --danger-strong: #b91c1c;
+  --danger-light: #fee2e2;
+  --danger-text: #b91c1c;
+
+  --warning: #d97706;
+  --warning-strong: #b45309;
+  --warning-light: #fef3c7;
+  --warning-text: #92400e;
+
+  --info: var(--primary);
+  --overlay: rgba(15, 23, 42, 0.55);
+
+  /* Sombras y radios */
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.12);
   --radius: 8px;
 }
 
@@ -52,4 +80,14 @@ select,
 textarea {
   font-family: inherit;
   font-size: inherit;
+}
+
+::selection {
+  background: var(--primary-light);
+  color: var(--primaryFocus);
+}
+
+:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
 }

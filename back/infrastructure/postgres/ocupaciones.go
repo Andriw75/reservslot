@@ -147,6 +147,30 @@ func (r *OcupacionRepo) FindByID(id int64) (*sportslot.Ocupacion, error) {
 		`SELECT `+ocupacionCols+` FROM ocupaciones WHERE id = $1`, id))
 }
 
+func (r *OcupacionRepo) CountByAmbienteID(ambienteID int64) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var total int
+	if err := r.db.Pool.QueryRow(ctx,
+		`SELECT count(*) FROM ocupaciones WHERE ambiente_id = $1`, ambienteID,
+	).Scan(&total); err != nil {
+		return 0, mapErr(err)
+	}
+	return total, nil
+}
+
+func (r *OcupacionRepo) DeleteByAmbienteID(ambienteID int64) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	tag, err := r.db.Pool.Exec(ctx, `DELETE FROM ocupaciones WHERE ambiente_id = $1`, ambienteID)
+	if err != nil {
+		return 0, mapErr(err)
+	}
+	return int(tag.RowsAffected()), nil
+}
+
 // ListByAmbienteIDRange devuelve las ocupaciones activas que intersecan
 // [from, to). El rango de destino es semiabierto: inicio < to AND fin > from.
 func (r *OcupacionRepo) ListByAmbienteIDRange(ambienteID int64, from, to time.Time) ([]sportslot.Ocupacion, error) {

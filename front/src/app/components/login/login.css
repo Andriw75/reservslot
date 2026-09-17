@@ -117,7 +117,7 @@
 }
 
 .submitButton:disabled {
-  background: #b0b0b0;
+  background: var(--text-muted);
   cursor: not-allowed;
   transform: none;
 }

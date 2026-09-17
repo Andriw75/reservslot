@@ -54,7 +54,16 @@ export class OcupacionesListComponent {
 
     effect(() => {
       const ambientes = this.ambientes();
-      if (this.selectedAmbienteId() == null && ambientes.length) {
+      const selected = this.selectedAmbienteId();
+
+      // El ambiente seleccionado fue eliminado: volver al primero disponible.
+      if (selected != null && !ambientes.some((ambiente) => ambiente.id === selected)) {
+        this.showModal.set(false);
+        this.selected.set(null);
+        this.selectedAmbienteId.set(ambientes.length ? ambientes[0].id : null);
+        return;
+      }
+      if (selected == null && ambientes.length) {
         this.selectedAmbienteId.set(ambientes[0].id);
       }
     });

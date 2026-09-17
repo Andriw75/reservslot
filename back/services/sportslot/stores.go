@@ -24,6 +24,8 @@ type AmbienteStore interface {
 	FindAll() ([]Ambiente, error)
 	Update(id int64, a *Ambiente) error
 	Delete(id int64) error
+	// DeleteCascade elimina el ambiente junto con sus ocupaciones.
+	DeleteCascade(id int64) error
 }
 
 type AmbienteInfoStore interface {
@@ -46,4 +48,6 @@ type OcupacionStore interface {
 	FindByID(id int64) (*Ocupacion, error)
 	ListByAmbienteIDRange(ambienteID int64, from, to time.Time) ([]Ocupacion, error)
 	ListRange(from, to time.Time) ([]Ocupacion, error)
+	CountByAmbienteID(ambienteID int64) (int, error)
+	DeleteByAmbienteID(ambienteID int64) (int, error)
 }

@@ -308,11 +308,39 @@ func (h *SportSlotHandlers) DeleteAmbiente(w http.ResponseWriter, r *http.Reques
 		writeJSONError(w, http.StatusNotFound, "not found")
 		return
 	}
-	imagenes, _ := h.Service.GetAmbienteImagenes(id)
-	if err := h.Service.Ambientes.Delete(id); err != nil {
+
+	cascade := r.URL.Query().Get("cascade") == "true"
+
+	total, err := h.Service.CountOcupaciones(id)
+	if err != nil {
 		writeJSONError(w, http.StatusInternalServerError, "failed")
 		return
 	}
+	if total > 0 && !cascade {
+		writeJSON(w, http.StatusConflict, map[string]any{
+			"error":       "El ambiente tiene ocupaciones registradas",
+			"ocupaciones": total,
+		})
+		return
+	}
+
+	imagenes, _ := h.Service.GetAmbienteImagenes(id)
+	if err := h.Service.DeleteAmbiente(id, cascade); err != nil {
+		if errors.Is(err, sportslot.ErrHasOcupaciones) {
+			writeJSON(w, http.StatusConflict, map[string]any{
+				"error":       "El ambiente tiene ocupaciones registradas",
+				"ocupaciones": total,
+			})
+			return
+		}
+		if errors.Is(err, sportslot.ErrNotFound) {
+			writeJSONError(w, http.StatusNotFound, "not found")
+			return
+		}
+		writeJSONError(w, http.StatusInternalServerError, "failed")
+		return
+	}
+
 	_ = h.Service.AmbienteInfo.DeleteByAmbienteID(id)
 	names := make([]string, 0, len(imagenes))
 	for _, img := range imagenes {
@@ -320,6 +348,7 @@ func (h *SportSlotHandlers) DeleteAmbiente(w http.ResponseWriter, r *http.Reques
 		h.Service.Imagenes.DeleteByID(img.ID)
 	}
 	h.Service.Storage.RemoveImages(names...)
+
 	h.SSEBus.Broadcast(sportslot.SportSlotSSE{Topic: sportslot.TopicAmbientes, Event: "ambiente.delete", Data: map[string]int64{"id": id}})
 	writeJSON(w, http.StatusOK, map[string]string{"message": "deleted"})
 }

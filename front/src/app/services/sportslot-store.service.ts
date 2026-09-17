@@ -48,6 +48,7 @@ export class SportslotStoreService {
   readonly ambientes = signal<Ambiente[]>([]);
   readonly infos = signal<Record<number, AmbienteInfoState>>({});
   readonly ocupaciones = signal<Record<number, OcupacionesState>>({});
+  readonly catalogReady = signal(false);
 
   private coreActive = false;
   private readonly extraTopics = new Map<string, number>();
@@ -72,17 +73,15 @@ export class SportslotStoreService {
       next: ({ categorias, ambientes }) => {
         if (!sameList(this.categorias(), categorias)) this.categorias.set(categorias);
         if (!sameList(this.ambientes(), ambientes)) this.ambientes.set(ambientes);
+        this.catalogReady.set(true);
       },
     });
   }
 
   loadInfo(ambienteId: number): void {
-    this.http
-      .get<AmbienteInfoResponse>(`${this.api}/ambientes/${ambienteId}/info`)
-      .subscribe({
-        next: (response) =>
-          this.upsertInfo(ambienteId, response.info, response.imagenes ?? []),
-      });
+    this.http.get<AmbienteInfoResponse>(`${this.api}/ambientes/${ambienteId}/info`).subscribe({
+      next: (response) => this.upsertInfo(ambienteId, response.info, response.imagenes ?? []),
+    });
   }
 
   loadOcupaciones(ambienteId: number, from?: string, to?: string): void {

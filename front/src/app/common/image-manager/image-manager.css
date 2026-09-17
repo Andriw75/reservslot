@@ -40,15 +40,15 @@
 }
 
 .dot--uploaded {
-  background: #16a34a;
+  background: var(--success);
 }
 
 .dot--pending {
-  background: #fbbf24;
+  background: var(--warning);
 }
 
 .dot--deleted {
-  background: #ef4444;
+  background: var(--danger);
 }
 
 .image-grid {
@@ -102,15 +102,15 @@
 }
 
 .image-card.card--uploaded {
-  border-color: #16a34a;
+  border-color: var(--success);
 }
 
 .image-card.card--pending {
-  border-color: #fbbf24;
+  border-color: var(--warning);
 }
 
 .image-card.card--deleted {
-  border-color: #ef4444;
+  border-color: var(--danger);
   opacity: 0.75;
 }
 
@@ -129,7 +129,7 @@
   z-index: 3;
   font-size: 12px;
   line-height: 1;
-  color: #475569;
+  color: var(--text-secondary);
   background: rgba(255, 255, 255, 0.9);
   border-radius: 6px;
   padding: 3px 5px;
@@ -186,7 +186,7 @@
   border: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.95);
-  color: #1e293b;
+  color: var(--text);
   font-size: 15px;
   font-weight: 700;
   line-height: 1;
@@ -202,7 +202,7 @@
 }
 
 .image-remove:hover {
-  background: #ef4444;
+  background: var(--danger);
   color: #fff;
   transform: scale(1.08);
 }
@@ -284,7 +284,8 @@
 
 .image-actions--buttons {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
 }
 
 .btn {
@@ -303,12 +304,12 @@
 }
 
 .btn--apply {
-  background: #16a34a;
+  background: var(--success);
   color: #fff;
 }
 
 .btn--apply:hover:not(:disabled) {
-  background: #15803d;
+  background: var(--success-strong);
 }
 
 .btn--discard {

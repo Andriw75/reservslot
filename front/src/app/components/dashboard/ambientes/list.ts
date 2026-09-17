@@ -61,15 +61,37 @@ export class AmbientesListComponent {
 
     this.deleting.set(ambiente.id);
     this.service.delete(ambiente.id).subscribe({
-      next: () => {
-        this.toast.success('Ambiente eliminado');
-        this.deleting.set(null);
-        this.store.loadCatalog();
-      },
-      error: () => {
+      next: () => this.onDeleted(),
+      error: async (err) => {
+        if (err?.status === 409) {
+          const total = Number(err?.error?.ocupaciones ?? 0);
+          this.deleting.set(null);
+          const confirmed = await this.confirm.confirm(
+            'Ambiente con ocupaciones',
+            `"${ambiente.nombre}" tiene ${total} ocupación(es) registrada(s). ` +
+              `Si continúas se eliminarán también esas ocupaciones. ¿Deseas continuar?`,
+            'danger',
+          );
+          if (!confirmed) return;
+          this.deleting.set(ambiente.id);
+          this.service.delete(ambiente.id, true).subscribe({
+            next: () => this.onDeleted(),
+            error: () => {
+              this.deleting.set(null);
+              this.toast.error('Error al eliminar ambiente');
+            },
+          });
+          return;
+        }
         this.deleting.set(null);
         this.toast.error('Error al eliminar ambiente');
       },
     });
+  }
+
+  private onDeleted(): void {
+    this.toast.success('Ambiente eliminado');
+    this.deleting.set(null);
+    this.store.loadCatalog();
   }
 }

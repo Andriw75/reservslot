@@ -10,14 +10,14 @@ const (
 	EventCategoriaUpsert EventType = "categoria"
 	EventAmbienteUpsert  EventType = "ambiente"
 	EventAmbienteInfo    EventType = "ambiente_info"
-	EventAmbienteOcup     EventType = "ambiente_ocupaciones"
+	EventAmbienteOcup    EventType = "ambiente_ocupaciones"
 )
 
 type SportSlotTopic string
 
 const (
-	TopicCategorias SportSlotTopic = "categorias"
-	TopicAmbientes  SportSlotTopic = "ambientes"
+	TopicCategorias  SportSlotTopic = "categorias"
+	TopicAmbientes   SportSlotTopic = "ambientes"
 	TopicOcupaciones SportSlotTopic = "ocupaciones"
 )
 

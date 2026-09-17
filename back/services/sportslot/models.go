@@ -17,12 +17,12 @@ type Categoria struct {
 }
 
 type Ambiente struct {
-	ID         int64     `json:"id"`
-	Nombre     string    `json:"nombre"`
-	CategoriaID int64   `json:"categoria_id"`
-	Activo     bool      `json:"activo"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID          int64     `json:"id"`
+	Nombre      string    `json:"nombre"`
+	CategoriaID int64     `json:"categoria_id"`
+	Activo      bool      `json:"activo"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type AmbienteInfo struct {
@@ -35,7 +35,7 @@ type AmbienteInfo struct {
 
 type Imagen struct {
 	ID          int64     `json:"id"`
-	AmbienteID int64     `json:"ambiente_id"`
+	AmbienteID  int64     `json:"ambiente_id"`
 	Archivo     string    `json:"archivo"`
 	Descripcion *string   `json:"descripcion,omitempty"`
 	Orden       int       `json:"orden"`
@@ -57,7 +57,8 @@ type Ocupacion struct {
 }
 
 var (
-	ErrNotFound          = errors.New("not found")
+	ErrNotFound         = errors.New("not found")
 	ErrOverlap          = errors.New("overlapping occupation")
 	ErrInvalidTimeRange = errors.New("invalid time range")
+	ErrHasOcupaciones   = errors.New("ambiente has ocupaciones")
 )
