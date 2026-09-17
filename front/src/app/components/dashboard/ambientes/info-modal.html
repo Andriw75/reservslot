@@ -1,0 +1,73 @@
+<div class="overlay" (click)="close()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h2>Información del ambiente</h2>
+        <span class="modal-subtitle">{{ ambiente().nombre }}</span>
+      </div>
+      <button class="close-btn" (click)="close()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      @if (!dataLoaded()) {
+        <div class="loading">Cargando información...</div>
+      } @else {
+        <form (ngSubmit)="onSubmit()" class="info-form">
+          <div class="grid">
+            <div class="field">
+              <label>Ancho (m)</label>
+              <input type="number" min="0" step="0.01" [(ngModel)]="form.ancho" name="ancho" />
+            </div>
+            <div class="field">
+              <label>Alto (m)</label>
+              <input type="number" min="0" step="0.01" [(ngModel)]="form.alto" name="alto" />
+            </div>
+            <div class="field">
+              <label>Aforo</label>
+              <input type="number" min="0" step="1" [(ngModel)]="form.aforo" name="aforo" />
+            </div>
+            <div class="field field--full">
+              <label>Descripción</label>
+              <textarea [(ngModel)]="form.descripcion" name="descripcion" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="options">
+            <span class="options-title">Opciones adicionales</span>
+            <div class="options-grid">
+              @for (key of optionKeys(); track key) {
+                <label class="option">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="form.opciones_adicionales[key]"
+                    [name]="'opt_' + key"
+                  />
+                  {{ key }}
+                </label>
+              }
+            </div>
+          </div>
+
+          <div class="images-section">
+            <app-image-manager
+              [entityId]="ambiente().id"
+              [imagenes]="info().imagenes"
+              [api]="infoApi"
+            />
+          </div>
+
+          @if (error()) {
+            <div class="form-error">{{ error() }}</div>
+          }
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn--secondary" (click)="close()">Cerrar</button>
+            <button type="submit" class="btn btn--primary" [disabled]="saving()">
+              {{ saving() ? 'Guardando...' : 'Guardar información' }}
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,383 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.portal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: var(--primary);
+  color: white;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: white;
+}
+
+.brand-tagline {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.login-link {
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.login-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.portal {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  color: var(--primary);
+}
+
+.empty {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.detail-header h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.category-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-chip {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 22px;
+}
+
+.gallery-main {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
+  aspect-ratio: 16 / 10;
+}
+
+.gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 10;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  background: var(--bg-card);
+}
+
+.gallery-thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.thumb {
+  width: 72px;
+  height: 56px;
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.thumb--active,
+.thumb:hover {
+  border-color: var(--primary);
+}
+
+.info-panel {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 22px;
+}
+
+.info-panel h2 {
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+
+.info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.info-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.description {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.options {
+  margin-top: 18px;
+}
+
+.options-title {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.options-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.option-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.option-chip--on {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.schedule-section {
+  margin-top: 32px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 22px;
+}
+
+.schedule-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.schedule-header h2 {
+  font-size: 16px;
+}
+
+.schedule-range {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.schedule-scroll {
+  overflow-x: auto;
+}
+
+.schedule {
+  min-width: 760px;
+}
+
+.schedule-days-row {
+  display: grid;
+  grid-template-columns: 52px repeat(7, 1fr);
+  gap: 4px;
+}
+
+.schedule-corner {
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.schedule-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 2px;
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.schedule-day--today {
+  background: var(--primary-light);
+}
+
+.day-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.day-short {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 52px repeat(7, 1fr);
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.hours-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-hour {
+  height: 34px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-right: 8px;
+  font-size: 10px;
+  color: var(--text-muted);
+  transform: translateY(-6px);
+}
+
+.schedule-column {
+  position: relative;
+  border-left: 1px solid var(--border);
+}
+
+.schedule-cell {
+  height: 34px;
+  border-bottom: 1px solid var(--border);
+}
+
+.block {
+  position: absolute;
+  top: 2px;
+  height: 30px;
+  border-radius: 6px;
+  background: var(--secondary);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: default;
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 900px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-header,
+  .portal {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+}

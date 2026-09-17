@@ -1,0 +1,55 @@
+@if (totalPages() > 1) {
+  <div class="pagination-bar">
+    <button class="page-btn" (click)="jump(-1)" [disabled]="page() <= 1">&lsaquo;</button>
+
+    @for (item of beforeItems(); track $index) {
+      @if (item === 'ellipsis') {
+        <span class="ellipsis">&hellip;</span>
+      } @else {
+        <button class="page-btn" (click)="goTo(item)">{{ item }}</button>
+      }
+    }
+
+    <div class="combo-wrapper">
+      <input
+        class="page-input"
+        type="text"
+        inputmode="numeric"
+        [value]="inputValue() || page()"
+        (focus)="onFocus()"
+        (input)="onInput($event)"
+        (keydown)="onKeyDown($event)"
+        [title]="'Pagina ' + page() + ' de ' + totalPages()"
+      />
+      @if (isOpen()) {
+        <div class="dropdown">
+          @if (filteredPages().length === 0) {
+            <div class="empty">Sin resultados</div>
+          }
+          @for (p of filteredPages(); track p) {
+            <button
+              class="dropdown-item"
+              [class.dropdown-item--disabled]="p === page()"
+              [disabled]="p === page()"
+              (click)="selectPage(p)"
+            >
+              {{ p }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    @for (item of afterItems(); track $index) {
+      @if (item === 'ellipsis') {
+        <span class="ellipsis">&hellip;</span>
+      } @else {
+        <button class="page-btn" (click)="goTo(item)">{{ item }}</button>
+      }
+    }
+
+    <button class="page-btn" (click)="jump(1)" [disabled]="page() >= totalPages()">&rsaquo;</button>
+
+    <span class="page-count">{{ total() }} total</span>
+  </div>
+}

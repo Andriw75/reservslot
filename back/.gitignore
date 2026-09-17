@@ -1,0 +1,6 @@
+.env
+tmp/
+*.exe
+*.test
+*.out
+public/

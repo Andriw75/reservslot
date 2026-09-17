@@ -1,0 +1,47 @@
+@if (item.submenu) {
+  <div class="toggleLabel" (click)="toggle()">
+    <div class="toggleContent">
+      @if (item.icon) {
+        <ng-container
+          [ngComponentOutlet]="item.icon.component"
+          [ngComponentOutletInputs]="item.icon.inputs || {}"
+        />
+      }
+      @if (!collapsed) {
+        <span class="menuText">{{ item.label }}</span>
+      }
+    </div>
+    @if (!collapsed) {
+      <span class="arrow" [class.open]="isOpen()">▶</span>
+    }
+  </div>
+  @if (isOpen()) {
+    <div class="submenu">
+      <ul class="menuList">
+        @for (child of item.submenu; track child.key) {
+          <li>
+            <sidebar-menu-item [item]="child" [collapsed]="collapsed" />
+          </li>
+        }
+      </ul>
+    </div>
+  }
+} @else {
+  <a
+    class="button"
+    [class.active]="isActive(item.path)"
+    [routerLink]="item.path"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }"
+  >
+    @if (item.icon) {
+      <ng-container
+        [ngComponentOutlet]="item.icon.component"
+        [ngComponentOutletInputs]="item.icon.inputs || {}"
+      />
+    }
+    @if (!collapsed) {
+      <span class="menuText">{{ item.label }}</span>
+    }
+  </a>
+}

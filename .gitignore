@@ -1,0 +1,17 @@
+# Entorno
+.env
+*.env.local
+
+# Backend
+back/tmp/
+back/*.exe
+back/public/
+
+# Frontend
+front/node_modules/
+front/dist/
+front/.angular/
+
+# Sistema
+.DS_Store
+Thumbs.db

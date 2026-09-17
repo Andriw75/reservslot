@@ -1,0 +1,19 @@
+<div class="home">
+  <h1>Hola, {{ auth.user()?.username }}</h1>
+  <p class="subtitle">Resumen general del sistema</p>
+
+  <div class="cards">
+    <a class="card" routerLink="/dashboard/categorias">
+      <span class="card-label">Categorías</span>
+      <span class="card-value">{{ categorias().length }}</span>
+    </a>
+    <a class="card" routerLink="/dashboard/ambientes">
+      <span class="card-label">Ambientes</span>
+      <span class="card-value">{{ ambientes().length }}</span>
+    </a>
+    <a class="card" routerLink="/dashboard/ocupaciones">
+      <span class="card-label">Ocupaciones (semana)</span>
+      <span class="card-value">{{ ocupacionesSemana() }}</span>
+    </a>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+<div class="container">
+  <form class="form" (submit)="handleSubmit($event)">
+    <h2 class="title">ReservSlot</h2>
+    <p class="subtitle">Gestión de ambientes deportivos</p>
+
+    <div class="inputGroup" [class.filled]="username()">
+      <input
+        type="text"
+        [value]="username()"
+        (input)="username.set($any($event.target).value)"
+        [disabled]="isLoading()"
+      />
+      <label class="label">Usuario</label>
+    </div>
+
+    <div class="inputGroup" [class.filled]="password()">
+      <input
+        type="password"
+        [value]="password()"
+        (input)="password.set($any($event.target).value)"
+        [disabled]="isLoading()"
+      />
+      <label class="label">Contraseña</label>
+    </div>
+
+    @if (error()) {
+      <div class="formError">{{ error() }}</div>
+    }
+
+    <button type="submit" class="submitButton" [disabled]="isLoading()">
+      @if (isLoading()) {
+        <icon-spinner size="1.2em" class="spinner" />
+      } @else {
+        Ingresar
+      }
+    </button>
+
+    <a class="portalLink" routerLink="/">Volver al portal público</a>
+  </form>
+</div>

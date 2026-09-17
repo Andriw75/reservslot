@@ -1,0 +1,140 @@
+<header class="portal-header">
+  <div class="brand">
+    <a class="brand-name" routerLink="/">ReservSlot</a>
+    <span class="brand-tagline">Ambientes deportivos</span>
+  </div>
+  <a class="login-link" routerLink="/login">Iniciar sesión</a>
+</header>
+
+<main class="portal">
+  <a class="back-link" routerLink="/">← Volver al listado</a>
+
+  @if (notFound()) {
+    <div class="empty">El ambiente solicitado no existe.</div>
+  } @else {
+    <section class="detail-header">
+      <div>
+        <h1>{{ ambiente()?.nombre ?? 'Ambiente' }}</h1>
+        @if (categoria(); as cat) {
+          <span class="category-chip" [style.background]="cat.color || 'var(--primary)'">
+            {{ cat.nombre }}
+          </span>
+        }
+      </div>
+      @if (ambiente() && !ambiente()!.activo) {
+        <span class="status-chip">No disponible</span>
+      }
+    </section>
+
+    <section class="detail-grid">
+      <div class="gallery">
+        @if (currentImage()) {
+          <div class="gallery-main">
+            <img [src]="currentImageUrl()" [alt]="ambiente()?.nombre ?? 'Ambiente'" />
+          </div>
+          @if (images().length > 1) {
+            <div class="gallery-thumbs">
+              @for (image of images(); track image.id; let index = $index) {
+                <button
+                  class="thumb"
+                  [class.thumb--active]="index === activeImage()"
+                  (click)="selectImage(index)"
+                >
+                  <img [src]="imageUrl(image)" [alt]="'Imagen ' + (index + 1)" />
+                </button>
+              }
+            </div>
+          }
+        } @else {
+          <div class="gallery-placeholder">Sin imágenes registradas</div>
+        }
+      </div>
+
+      <div class="info-panel">
+        <h2>Información</h2>
+
+        @if (infoRows().length) {
+          <div class="info-rows">
+            @for (row of infoRows(); track row.label) {
+              <div class="info-row">
+                <span class="info-label">{{ row.label }}</span>
+                <span class="info-value">{{ row.value }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="muted">Sin medidas ni aforo registrados.</p>
+        }
+
+        @if (description()) {
+          <p class="description">{{ description() }}</p>
+        }
+
+        @if (options().length) {
+          <div class="options">
+            <span class="options-title">Opciones adicionales</span>
+            <div class="options-list">
+              @for (option of options(); track option.label) {
+                <span class="option-chip" [class.option-chip--on]="option.value === 'Sí'">
+                  {{ option.label }}{{ option.value === 'Sí' ? ' ✓' : '' }}
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="schedule-section">
+      <div class="schedule-header">
+        <h2>Horario de la semana</h2>
+        @if (weekLabel()) {
+          <span class="schedule-range">{{ weekLabel() }}</span>
+        }
+      </div>
+
+      <div class="schedule-scroll">
+        <div class="schedule">
+          <div class="schedule-days-row">
+            <div class="schedule-corner"></div>
+            @for (day of schedule().days; track day.date) {
+              <div class="schedule-day" [class.schedule-day--today]="day.isToday">
+                <span class="day-name">{{ day.name }}</span>
+                <span class="day-short">{{ day.short }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="schedule-grid">
+            <div class="hours-column">
+              @for (hour of schedule().hours; track hour) {
+                <div class="schedule-hour">{{ hour }}:00</div>
+              }
+            </div>
+            @for (day of schedule().days; track day.date; let dayIndex = $index) {
+              <div class="schedule-column">
+                @for (hour of schedule().hours; track hour) {
+                  <div class="schedule-cell"></div>
+                }
+                @for (block of blocksForDay(dayIndex); track block.id) {
+                  <span
+                    class="block"
+                    [style.left.%]="block.left"
+                    [style.width.%]="block.width"
+                    [title]="block.subtitle"
+                  >
+                    {{ block.label }}
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      @if (ocupaciones().data.length === 0) {
+        <p class="muted">No hay ocupaciones registradas esta semana.</p>
+      }
+    </section>
+  }
+</main>

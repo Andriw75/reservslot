@@ -1,0 +1,29 @@
+<nav class="sidebar" [class.collapsed]="isCollapsed()">
+  <div class="userSection" (click)="toggleSidebar()">
+    <icon-user-solid size="20" class="userIcon" />
+    @if (!isCollapsed()) {
+      <span class="userName">{{ user()?.username || 'Usuario' }}</span>
+    }
+  </div>
+
+  <div class="menuContainer">
+    <ul class="menuList">
+      @for (item of filterMenu(menu); track item.key) {
+        <li class="menuItem">
+          <sidebar-menu-item [item]="item" [collapsed]="isCollapsed()" />
+        </li>
+      }
+    </ul>
+  </div>
+
+  <button class="logoutButton" (click)="logout()" [disabled]="isLoggingOut()">
+    @if (isLoggingOut()) {
+      <icon-spinner size="1.2em" class="spinner" />
+    } @else {
+      <icon-logout size="20" />
+    }
+    @if (!isCollapsed()) {
+      <span class="logoutText">Cerrar sesión</span>
+    }
+  </button>
+</nav>

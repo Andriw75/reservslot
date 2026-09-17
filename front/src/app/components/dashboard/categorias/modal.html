@@ -1,0 +1,42 @@
+<div class="overlay" (click)="close()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditing() ? 'Editar categoría' : 'Nueva categoría' }}</h2>
+      <button class="close-btn" (click)="close()">&times;</button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="modal-body">
+      <div class="grid">
+        <div class="field field--full">
+          <label>Nombre *</label>
+          <input type="text" [(ngModel)]="form.nombre" name="nombre" required />
+        </div>
+        <div class="field field--full">
+          <label>Descripción</label>
+          <textarea [(ngModel)]="form.descripcion" name="descripcion" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label>Color</label>
+          <input type="color" [(ngModel)]="form.color" name="color" />
+        </div>
+        <div class="field field--checkbox">
+          <label>
+            <input type="checkbox" [(ngModel)]="form.activo" name="activo" />
+            Activo
+          </label>
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="form-error">{{ error() }}</div>
+      }
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn--secondary" (click)="close()">Cancelar</button>
+        <button type="submit" class="btn btn--primary" [disabled]="saving()">
+          {{ saving() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

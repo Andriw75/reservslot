@@ -1,0 +1,41 @@
+<header class="portal-header">
+  <div class="brand">
+    <span class="brand-name">ReservSlot</span>
+    <span class="brand-tagline">Ambientes deportivos</span>
+  </div>
+  <a class="login-link" routerLink="/login">Iniciar sesión</a>
+</header>
+
+<main class="portal">
+  <section class="hero">
+    <h1>Nuestros ambientes</h1>
+    <p>Consulta la disponibilidad de cada ambiente por categoría.</p>
+  </section>
+
+  @if (groups().length === 0) {
+    <div class="empty">Aún no hay ambientes publicados.</div>
+  }
+
+  @for (group of groups(); track group.categoria?.id ?? 'otros') {
+    @if (hasAmbientes(group)) {
+      <section class="category">
+        <div class="category-header">
+          <span class="category-dot" [style.background]="categoryColor(group)"></span>
+          <h2>{{ group.categoria?.nombre ?? 'Otros' }}</h2>
+        </div>
+        @if (group.categoria?.descripcion) {
+          <p class="category-description">{{ group.categoria?.descripcion }}</p>
+        }
+
+        <div class="ambientes-grid">
+          @for (ambiente of group.ambientes; track ambiente.id) {
+            <a class="ambiente-card" [routerLink]="['/ambientes', ambiente.id]">
+              <span class="ambiente-name">{{ ambiente.nombre }}</span>
+              <span class="ambiente-link">Ver disponibilidad →</span>
+            </a>
+          }
+        </div>
+      </section>
+    }
+  }
+</main>

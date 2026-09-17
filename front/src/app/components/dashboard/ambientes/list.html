@@ -1,0 +1,73 @@
+<div class="page-header">
+  <h1>Ambientes</h1>
+  <button class="btn btn--primary" (click)="openCreate()" [disabled]="categorias().length === 0">
+    + Nuevo ambiente
+  </button>
+</div>
+
+@if (categorias().length === 0) {
+  <div class="notice">Cree al menos una categoría antes de registrar ambientes.</div>
+}
+
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Categoría</th>
+        <th>Activo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (ambiente of ambientes(); track ambiente.id) {
+        <tr>
+          <td>{{ ambiente.id }}</td>
+          <td>
+            <strong>{{ ambiente.nombre }}</strong>
+          </td>
+          <td>{{ categoriaName(ambiente.categoria_id) }}</td>
+          <td>
+            @if (ambiente.activo) {
+              <span class="badge badge--activo">Sí</span>
+            } @else {
+              <span class="badge badge--inactivo">No</span>
+            }
+          </td>
+          <td>
+            <button class="btn-icon" title="Información" (click)="openInfo(ambiente)">
+              📋 Info
+            </button>
+            <button class="btn-icon" title="Editar" (click)="openEdit(ambiente)">✏️</button>
+            <button
+              class="btn-icon"
+              title="Eliminar"
+              (click)="confirmDelete(ambiente)"
+              [disabled]="deleting() === ambiente.id"
+            >
+              🗑️
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="empty">No hay ambientes registrados</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (showModal()) {
+  <app-ambiente-modal
+    [ambiente]="selected()"
+    [categorias]="categorias()"
+    (onClose)="showModal.set(false)"
+    (onSaved)="onSaved()"
+  />
+}
+
+@if (showInfoModal()) {
+  <app-ambiente-info-modal [ambiente]="selected()!" (onClose)="showInfoModal.set(false)" />
+}

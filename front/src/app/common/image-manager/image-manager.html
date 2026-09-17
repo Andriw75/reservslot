@@ -1,0 +1,117 @@
+<div class="image-manager">
+  <div class="image-header">
+    <span class="image-title">Imágenes</span>
+    <div class="image-legend">
+      <span class="legend-item"><span class="dot dot--uploaded"></span> En servidor</span>
+      <span class="legend-item"><span class="dot dot--pending"></span> Por subir</span>
+      <span class="legend-item"><span class="dot dot--deleted"></span> Por eliminar</span>
+    </div>
+  </div>
+
+  @if (cards().length > 0) {
+    <div class="image-grid">
+      @for (card of cards(); track card.key) {
+        <div
+          class="image-card"
+          [class.card--uploaded]="card.status === 'uploaded'"
+          [class.card--pending]="card.status === 'pending-upload'"
+          [class.card--deleted]="card.status === 'pending-delete'"
+        >
+          <img [src]="card.url" alt="imagen" />
+          <span
+            class="image-status"
+            [class.status--uploaded]="card.status === 'uploaded'"
+            [class.status--pending]="card.status === 'pending-upload'"
+            [class.status--deleted]="card.status === 'pending-delete'"
+          >
+            {{ statusLabel(card) }}
+          </span>
+          <div class="image-overlay">
+            <button
+              type="button"
+              class="image-remove"
+              [title]="
+                card.status === 'pending-delete'
+                  ? 'Restaurar'
+                  : card.status === 'uploaded'
+                    ? 'Marcar para eliminar'
+                    : 'Quitar'
+              "
+              (click)="removeOrRestore(card)"
+            >
+              {{ card.status === 'pending-delete' ? '↩' : '✕' }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <label
+    class="dropzone"
+    [class.dropzone--active]="zoneActive()"
+    [class.dropzone--empty]="cards().length === 0"
+    [class.dropzone--disabled]="applying()"
+    (dragover)="onZoneDragOver($event)"
+    (dragleave)="onZoneDragLeave()"
+    (drop)="onZoneDrop($event)"
+  >
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      (change)="onFilesSelected($event)"
+      [disabled]="applying()"
+    />
+    <svg
+      class="dropzone-icon"
+      viewBox="0 0 24 24"
+      width="30"
+      height="30"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" y1="3" x2="12" y2="15" />
+    </svg>
+    <span class="dropzone-text">
+      {{
+        cards().length === 0
+          ? 'Arrastra imágenes aquí o haz clic para subirlas'
+          : 'Arrastra más imágenes o haz clic para agregar'
+      }}
+    </span>
+    <span class="dropzone-hint">JPG, PNG, WebP</span>
+  </label>
+
+  <div class="image-actions">
+    <span class="image-count"
+      >{{ cards().length }} {{ cards().length === 1 ? 'imagen' : 'imágenes' }}</span
+    >
+    @if (hasPending || applying()) {
+      <div class="image-actions--buttons">
+        <button
+          type="button"
+          class="btn btn--discard"
+          [disabled]="applying()"
+          (click)="discardChanges()"
+        >
+          Descartar cambios
+        </button>
+        <button
+          type="button"
+          class="btn btn--apply"
+          [disabled]="applying() || !hasPending"
+          (click)="applyImages()"
+        >
+          {{ applying() ? 'Aplicando...' : pendingSummary }}
+        </button>
+      </div>
+    }
+  </div>
+</div>
