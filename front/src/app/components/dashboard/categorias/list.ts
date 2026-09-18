@@ -9,7 +9,6 @@ import type { Categoria } from '../../../models/categoria';
 @Component({
   selector: 'app-categorias-list',
   templateUrl: './list.html',
-  styleUrl: './list.css',
   imports: [CategoriaModalComponent],
 })
 export class CategoriasListComponent {

@@ -1,13 +1,20 @@
-<div class="toast-container">
+<div class="toast-container" role="status" aria-live="polite">
   @for (t of toast.toasts(); track t.id) {
     <div
       class="toast"
       [class.toast--success]="t.type === 'success'"
       [class.toast--error]="t.type === 'error'"
       [class.toast--info]="t.type === 'info'"
-      (click)="toast.remove(t.id)"
     >
-      <span>{{ t.message }}</span>
+      <span class="toast-message">{{ t.message }}</span>
+      <button
+        type="button"
+        class="toast-close"
+        aria-label="Cerrar notificación"
+        (click)="toast.remove(t.id)"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
   }
 </div>

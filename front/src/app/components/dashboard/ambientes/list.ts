@@ -12,7 +12,6 @@ import type { Ambiente } from '../../../models/ambiente';
 @Component({
   selector: 'app-ambientes-list',
   templateUrl: './list.html',
-  styleUrl: './list.css',
   imports: [AmbienteModalComponent, AmbienteInfoModalComponent, ShareButtonComponent],
 })
 export class AmbientesListComponent {

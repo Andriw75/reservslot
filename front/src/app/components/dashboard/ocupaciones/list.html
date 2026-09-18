@@ -12,20 +12,36 @@
 } @else {
   <div class="filters">
     <div class="filter-field">
-      <label>Ambiente</label>
-      <select [ngModel]="selectedAmbienteId()" (ngModelChange)="onAmbienteChange($event)">
+      <label for="filtro-ambiente">Ambiente</label>
+      <select
+        id="filtro-ambiente"
+        [ngModel]="selectedAmbienteId()"
+        (ngModelChange)="onAmbienteChange($event)"
+      >
         @for (ambiente of ambientes(); track ambiente.id) {
           <option [ngValue]="ambiente.id">{{ ambiente.nombre }}</option>
         }
       </select>
     </div>
     <div class="filter-field">
-      <label>Desde</label>
-      <input type="date" [(ngModel)]="range().from" (change)="onRangeChange()" name="from" />
+      <label for="filtro-desde">Desde</label>
+      <input
+        id="filtro-desde"
+        type="date"
+        [(ngModel)]="range().from"
+        (change)="onRangeChange()"
+        name="from"
+      />
     </div>
     <div class="filter-field">
-      <label>Hasta</label>
-      <input type="date" [(ngModel)]="range().to" (change)="onRangeChange()" name="to" />
+      <label for="filtro-hasta">Hasta</label>
+      <input
+        id="filtro-hasta"
+        type="date"
+        [(ngModel)]="range().to"
+        (change)="onRangeChange()"
+        name="to"
+      />
     </div>
   </div>
 
@@ -33,19 +49,20 @@
     <table class="table">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Inicio</th>
-          <th>Fin</th>
-          <th>Activo</th>
-          <th>Acciones</th>
+          <th scope="col">ID</th>
+          <th scope="col">Inicio</th>
+          <th scope="col">Fin</th>
+          <th scope="col">Activo</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
         @for (ocupacion of ocupaciones(); track ocupacion.id) {
+          @let rango = formatRange(ocupacion).split(' - ');
           <tr>
             <td>{{ ocupacion.id }}</td>
-            <td>{{ formatRange(ocupacion).split(' - ')[0] }}</td>
-            <td>{{ formatRange(ocupacion).split(' - ')[1] }}</td>
+            <td>{{ rango[0] }}</td>
+            <td>{{ rango[1] }}</td>
             <td>
               @if (ocupacion.activo) {
                 <span class="badge badge--activo">Sí</span>
@@ -54,10 +71,18 @@
               }
             </td>
             <td>
-              <button class="btn-icon" title="Editar" (click)="openEdit(ocupacion)">✏️</button>
               <button
-                class="btn-icon"
+                class="icon-btn"
+                title="Editar"
+                aria-label="Editar ocupación"
+                (click)="openEdit(ocupacion)"
+              >
+                ✏️
+              </button>
+              <button
+                class="icon-btn"
                 title="Eliminar"
+                aria-label="Eliminar ocupación"
                 (click)="confirmDelete(ocupacion)"
                 [disabled]="deleting() === ocupacion.id"
               >

@@ -1,5 +1,12 @@
 @if (item.submenu) {
-  <div class="toggleLabel" (click)="toggle()">
+  <button
+    type="button"
+    class="toggleLabel"
+    (click)="toggle()"
+    [attr.aria-label]="item.label"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-controls]="'submenu-' + item.key"
+  >
     <div class="toggleContent">
       @if (item.icon) {
         <ng-container
@@ -12,11 +19,11 @@
       }
     </div>
     @if (!collapsed) {
-      <span class="arrow" [class.open]="isOpen()">▶</span>
+      <span class="arrow" [class.open]="isOpen()" aria-hidden="true">▶</span>
     }
-  </div>
+  </button>
   @if (isOpen()) {
-    <div class="submenu">
+    <div class="submenu" [id]="'submenu-' + item.key">
       <ul class="menuList">
         @for (child of item.submenu; track child.key) {
           <li>
@@ -33,6 +40,8 @@
     [routerLink]="item.path"
     routerLinkActive="active"
     [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }"
+    [attr.aria-label]="item.label"
+    [title]="item.label"
   >
     @if (item.icon) {
       <ng-container

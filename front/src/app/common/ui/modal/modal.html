@@ -1,0 +1,30 @@
+<div class="overlay" (click)="onBackdrop()">
+  <div
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="titleId"
+    [style.max-width.px]="width()"
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="true"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-header">
+      <div class="modal-heading">
+        <h2 [id]="titleId">{{ title() }}</h2>
+        @if (subtitle()) {
+          <span class="modal-subtitle">{{ subtitle() }}</span>
+        }
+      </div>
+      @if (showClose()) {
+        <button type="button" class="close-btn" (click)="close()" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      }
+    </div>
+
+    <div class="modal-body">
+      <ng-content />
+    </div>
+  </div>
+</div>

@@ -1,10 +1,16 @@
-<nav class="sidebar" [class.collapsed]="isCollapsed()">
-  <div class="userSection" (click)="toggleSidebar()">
+<nav class="sidebar" [class.collapsed]="isCollapsed()" aria-label="Menú principal">
+  <button
+    type="button"
+    class="userSection"
+    (click)="toggleSidebar()"
+    [attr.aria-label]="isCollapsed() ? 'Expandir menú' : 'Contraer menú'"
+    [attr.aria-expanded]="!isCollapsed()"
+  >
     <icon-user-solid size="20" class="userIcon" />
     @if (!isCollapsed()) {
       <span class="userName">{{ user()?.username || 'Usuario' }}</span>
     }
-  </div>
+  </button>
 
   <div class="menuContainer">
     <ul class="menuList">
@@ -16,7 +22,13 @@
     </ul>
   </div>
 
-  <button class="logoutButton" (click)="logout()" [disabled]="isLoggingOut()">
+  <button
+    class="logoutButton"
+    (click)="logout()"
+    [disabled]="isLoggingOut()"
+    aria-label="Cerrar sesión"
+    title="Cerrar sesión"
+  >
     @if (isLoggingOut()) {
       <icon-spinner size="1.2em" class="spinner" />
     } @else {

@@ -37,32 +37,28 @@
         d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7L12 19"
       />
     </svg>
-    <span>{{ copied() ? '¡Copiado!' : label() }}</span>
+    <span aria-live="polite">{{ copied() ? '¡Copiado!' : label() }}</span>
   </button>
 }
 
 @if (manualUrl(); as link) {
-  <div class="manual-overlay" (click)="closeManual()">
-    <div class="manual-dialog" (click)="$event.stopPropagation()">
-      <h3>Copiar enlace</h3>
-      <p>
-        Tu navegador bloqueó el acceso al portapapeles. Selecciona el enlace y cópialo manualmente.
-      </p>
-      <input
-        type="text"
-        [value]="link"
-        readonly
-        (focus)="selectAll($event)"
-        (click)="selectAll($event)"
-      />
-      <div class="manual-actions">
-        <button type="button" class="manual-btn manual-btn--secondary" (click)="closeManual()">
-          Cerrar
-        </button>
-        <button type="button" class="manual-btn manual-btn--primary" (click)="copyLink()">
-          Reintentar
-        </button>
-      </div>
+  <app-modal title="Copiar enlace" [width]="440" [showClose]="false" (closed)="closeManual()">
+    <p class="manual-text">
+      Tu navegador bloqueó el acceso al portapapeles. Selecciona el enlace y cópialo manualmente.
+    </p>
+    <label class="sr-only" for="share-manual-url">Enlace para copiar</label>
+    <input
+      id="share-manual-url"
+      class="manual-input"
+      type="text"
+      [value]="link"
+      readonly
+      (focus)="selectAll($event)"
+      (click)="selectAll($event)"
+    />
+    <div class="modal-actions">
+      <button type="button" class="btn btn--secondary" (click)="closeManual()">Cerrar</button>
+      <button type="button" class="btn btn--primary" (click)="copyLink()">Reintentar</button>
     </div>
-  </div>
+  </app-modal>
 }

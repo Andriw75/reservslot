@@ -1,25 +1,25 @@
 .home h1 {
-  font-size: 28px;
-  margin-bottom: 4px;
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-1);
 }
 
 .subtitle {
   color: var(--text-secondary);
-  margin-bottom: 24px;
+  margin-bottom: var(--space-5);
 }
 
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
   max-width: 900px;
 }
 
 .card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 20px 24px;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-5);
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -37,13 +37,14 @@
 }
 
 .card-label {
-  font-size: 13px;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-secondary);
 }
 
 .card-value {
-  font-size: 32px;
+  font-size: var(--text-4xl);
   font-weight: 700;
+  letter-spacing: -0.5px;
   color: var(--primary);
 }

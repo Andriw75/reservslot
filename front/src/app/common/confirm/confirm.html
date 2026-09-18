@@ -1,18 +1,20 @@
 @if (confirm.state().visible) {
-  <div class="overlay" (click)="confirm.cancel()">
-    <div class="dialog" (click)="$event.stopPropagation()">
-      <h3>{{ confirm.state().title }}</h3>
-      <p>{{ confirm.state().message }}</p>
-      <div class="actions">
-        <button class="btn btn--secondary" (click)="confirm.cancel()">Cancelar</button>
-        @if (confirm.state().type === 'danger') {
-          <button class="btn btn--danger" (click)="confirm.confirmAction()">Eliminar</button>
-        } @else if (confirm.state().type === 'warning') {
-          <button class="btn btn--warning" (click)="confirm.confirmAction()">Confirmar</button>
-        } @else {
-          <button class="btn btn--primary" (click)="confirm.confirmAction()">Confirmar</button>
-        }
-      </div>
+  <app-modal
+    [title]="confirm.state().title"
+    [width]="400"
+    [showClose]="false"
+    (closed)="confirm.cancel()"
+  >
+    <p class="confirm-message">{{ confirm.state().message }}</p>
+    <div class="modal-actions">
+      <button class="btn btn--secondary" (click)="confirm.cancel()">Cancelar</button>
+      @if (confirm.state().type === 'danger') {
+        <button class="btn btn--danger" (click)="confirm.confirmAction()">Eliminar</button>
+      } @else if (confirm.state().type === 'warning') {
+        <button class="btn btn--warning" (click)="confirm.confirmAction()">Confirmar</button>
+      } @else {
+        <button class="btn btn--primary" (click)="confirm.confirmAction()">Confirmar</button>
+      }
     </div>
-  </div>
+  </app-modal>
 }

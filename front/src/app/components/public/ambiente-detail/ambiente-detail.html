@@ -139,6 +139,10 @@
                 ) {
                   <span
                     class="block"
+                    tabindex="0"
+                    [attr.aria-label]="
+                      segment.label + ', de ' + segment.startLabel + ' a ' + segment.endLabel
+                    "
                     [class.block--active]="isHighlighted(segment)"
                     [class.block--open-start]="!segment.isStart"
                     [class.block--open-end]="!segment.isEnd"
@@ -148,6 +152,8 @@
                     [style.height.%]="segment.height"
                     (mouseenter)="onSegmentEnter($event, segment)"
                     (mouseleave)="onSegmentLeave()"
+                    (focus)="onSegmentFocus($event, segment)"
+                    (blur)="onSegmentLeave()"
                   >
                     <span class="block-time">{{ segment.label }}</span>
                     <span class="block-range">{{ segment.startLabel }}–{{ segment.endLabel }}</span>

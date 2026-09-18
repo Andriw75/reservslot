@@ -23,8 +23,15 @@
           [class.card--pending]="card.status === 'pending-upload'"
           [class.card--deleted]="card.status === 'pending-delete'"
         >
-          <span class="drag-handle" cdkDragHandle title="Arrastrar para reordenar">⠿</span>
-          <img [src]="card.url" alt="imagen" />
+          <span
+            class="drag-handle"
+            cdkDragHandle
+            tabindex="0"
+            aria-label="Arrastrar para reordenar"
+            title="Arrastrar para reordenar"
+            >⠿</span
+          >
+          <img [src]="card.url" alt="" />
           <span
             class="image-status"
             [class.status--uploaded]="card.status === 'uploaded'"
@@ -33,22 +40,27 @@
           >
             {{ statusLabel(card) }}
           </span>
-          <div class="image-overlay">
-            <button
-              type="button"
-              class="image-remove"
-              [title]="
-                card.status === 'pending-delete'
-                  ? 'Restaurar'
-                  : card.status === 'uploaded'
-                    ? 'Marcar para eliminar'
-                    : 'Quitar'
-              "
-              (click)="removeOrRestore(card)"
-            >
-              {{ card.status === 'pending-delete' ? '↩' : '✕' }}
-            </button>
-          </div>
+          <button
+            type="button"
+            class="image-remove"
+            [attr.aria-label]="
+              card.status === 'pending-delete'
+                ? 'Restaurar imagen'
+                : card.status === 'uploaded'
+                  ? 'Marcar imagen para eliminar'
+                  : 'Quitar imagen'
+            "
+            [title]="
+              card.status === 'pending-delete'
+                ? 'Restaurar'
+                : card.status === 'uploaded'
+                  ? 'Marcar para eliminar'
+                  : 'Quitar'
+            "
+            (click)="removeOrRestore(card)"
+          >
+            <span aria-hidden="true">{{ card.status === 'pending-delete' ? '↩' : '✕' }}</span>
+          </button>
         </div>
       }
     </div>
@@ -99,7 +111,7 @@
   <div class="image-actions">
     <button
       type="button"
-      class="btn btn--discard"
+      class="btn btn--secondary"
       [disabled]="applying() || !hasPending"
       (click)="discardChanges()"
     >
@@ -111,7 +123,7 @@
       >
       <button
         type="button"
-        class="btn btn--apply"
+        class="btn btn--success"
         [disabled]="applying() || !hasPending"
         (click)="applyImages()"
       >

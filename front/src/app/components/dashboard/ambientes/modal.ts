@@ -2,14 +2,14 @@ import { Component, effect, inject, input, output, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { AmbientesService } from '../../../services/ambientes.service';
 import { ToastService } from '../../../services/toast.service';
+import { ModalComponent } from '../../../common/ui/modal/modal';
 import type { Ambiente, AmbienteInput } from '../../../models/ambiente';
 import type { Categoria } from '../../../models/categoria';
 
 @Component({
   selector: 'app-ambiente-modal',
   templateUrl: './modal.html',
-  styleUrl: './modal.css',
-  imports: [FormsModule],
+  imports: [FormsModule, ModalComponent],
 })
 export class AmbienteModalComponent {
   private service = inject(AmbientesService);

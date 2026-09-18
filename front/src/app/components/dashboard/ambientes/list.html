@@ -13,11 +13,11 @@
   <table class="table">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Categoría</th>
-        <th>Activo</th>
-        <th>Acciones</th>
+        <th scope="col">ID</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Categoría</th>
+        <th scope="col">Activo</th>
+        <th scope="col">Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -37,10 +37,17 @@
           </td>
           <td>
             <div class="row-actions">
-              <button class="btn-icon" title="Información" (click)="openInfo(ambiente)">
+              <button class="icon-btn" title="Información" (click)="openInfo(ambiente)">
                 📋 Info
               </button>
-              <button class="btn-icon" title="Editar" (click)="openEdit(ambiente)">✏️</button>
+              <button
+                class="icon-btn"
+                title="Editar"
+                aria-label="Editar ambiente"
+                (click)="openEdit(ambiente)"
+              >
+                ✏️
+              </button>
               <app-share-button
                 variant="flat"
                 [url]="ambienteUrl(ambiente.id)"
@@ -49,8 +56,9 @@
                 [label]="'Compartir ' + ambiente.nombre"
               />
               <button
-                class="btn-icon"
+                class="icon-btn"
                 title="Eliminar"
+                aria-label="Eliminar ambiente"
                 (click)="confirmDelete(ambiente)"
                 [disabled]="deleting() === ambiente.id"
               >

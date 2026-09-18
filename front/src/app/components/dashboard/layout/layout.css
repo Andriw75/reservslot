@@ -1,11 +1,7 @@
 .dashboard-layout {
   display: flex;
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
 }
 
 .main-content {
@@ -14,6 +10,6 @@
   flex-direction: column;
   background: var(--bg);
   overflow-y: auto;
-  padding: 24px;
-  height: 100vh;
+  padding: var(--space-5);
+  height: 100dvh;
 }

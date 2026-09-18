@@ -1,105 +1,131 @@
-<div class="overlay" (click)="close()">
-  <div class="modal" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <div>
-        <h2>Información del ambiente</h2>
-        <span class="modal-subtitle">{{ ambiente().nombre }}</span>
+<app-modal
+  title="Información del ambiente"
+  [subtitle]="ambiente().nombre"
+  [width]="680"
+  [closeOnBackdrop]="false"
+  (closed)="close()"
+>
+  @if (!dataLoaded()) {
+    <div class="loading" role="status">Cargando información...</div>
+  } @else {
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-grid form-grid--triple">
+        <div class="field">
+          <label for="info-ancho">Ancho (m)</label>
+          <input
+            id="info-ancho"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="form.ancho"
+            name="ancho"
+          />
+        </div>
+        <div class="field">
+          <label for="info-alto">Alto (m)</label>
+          <input
+            id="info-alto"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="form.alto"
+            name="alto"
+          />
+        </div>
+        <div class="field">
+          <label for="info-aforo">Aforo</label>
+          <input
+            id="info-aforo"
+            type="number"
+            min="0"
+            step="1"
+            [(ngModel)]="form.aforo"
+            name="aforo"
+          />
+        </div>
+        <div class="field field--full">
+          <label for="info-descripcion">Descripción</label>
+          <textarea
+            id="info-descripcion"
+            [(ngModel)]="form.descripcion"
+            name="descripcion"
+            rows="3"
+          ></textarea>
+        </div>
       </div>
-      <button class="close-btn" (click)="close()">&times;</button>
-    </div>
 
-    <div class="modal-body">
-      @if (!dataLoaded()) {
-        <div class="loading">Cargando información...</div>
-      } @else {
-        <form (ngSubmit)="onSubmit()" class="info-form">
-          <div class="grid">
-            <div class="field">
-              <label>Ancho (m)</label>
-              <input type="number" min="0" step="0.01" [(ngModel)]="form.ancho" name="ancho" />
-            </div>
-            <div class="field">
-              <label>Alto (m)</label>
-              <input type="number" min="0" step="0.01" [(ngModel)]="form.alto" name="alto" />
-            </div>
-            <div class="field">
-              <label>Aforo</label>
-              <input type="number" min="0" step="1" [(ngModel)]="form.aforo" name="aforo" />
-            </div>
-            <div class="field field--full">
-              <label>Descripción</label>
-              <textarea [(ngModel)]="form.descripcion" name="descripcion" rows="3"></textarea>
-            </div>
-          </div>
+      <div class="attributes">
+        <div class="attributes-head">
+          <span class="attributes-title">Atributos</span>
+          <button type="button" class="btn-add" (click)="addAtributo()">+ Agregar atributo</button>
+        </div>
 
-          <div class="attributes">
-            <div class="attributes-head">
-              <span class="attributes-title">Atributos</span>
-              <button type="button" class="btn-add" (click)="addAtributo()">
-                + Agregar atributo
-              </button>
-            </div>
-
-            @if (atributos().length) {
-              <div class="attributes-list" cdkDropList (cdkDropListDropped)="dropAtributo($event)">
-                @for (item of atributos(); track $index; let i = $index) {
-                  <div class="attribute-row" cdkDrag>
-                    <span class="attribute-drag" cdkDragHandle title="Arrastrar para reordenar"
-                      >⠿</span
-                    >
-                    <input
-                      type="text"
-                      placeholder="Clave"
-                      [ngModel]="item.clave"
-                      (ngModelChange)="updateAtributo(i, 'clave', $event)"
-                      [name]="'attr_clave_' + i"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Valor"
-                      [ngModel]="item.valor"
-                      (ngModelChange)="updateAtributo(i, 'valor', $event)"
-                      [name]="'attr_valor_' + i"
-                    />
-                    <button
-                      type="button"
-                      class="attribute-remove"
-                      title="Quitar atributo"
-                      (click)="removeAtributo(i)"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                }
+        @if (atributos().length) {
+          <div class="attributes-list" cdkDropList (cdkDropListDropped)="dropAtributo($event)">
+            @for (item of atributos(); track $index; let i = $index) {
+              <div class="attribute-row" cdkDrag>
+                <span
+                  class="attribute-drag"
+                  cdkDragHandle
+                  tabindex="0"
+                  [attr.aria-label]="'Reordenar atributo ' + (i + 1)"
+                  title="Arrastrar para reordenar"
+                  >⠿</span
+                >
+                <input
+                  type="text"
+                  placeholder="Clave"
+                  [attr.aria-label]="'Clave del atributo ' + (i + 1)"
+                  [ngModel]="item.clave"
+                  (ngModelChange)="updateAtributo(i, 'clave', $event)"
+                  [name]="'attr_clave_' + i"
+                />
+                <input
+                  type="text"
+                  placeholder="Valor"
+                  [attr.aria-label]="'Valor del atributo ' + (i + 1)"
+                  [ngModel]="item.valor"
+                  (ngModelChange)="updateAtributo(i, 'valor', $event)"
+                  [name]="'attr_valor_' + i"
+                />
+                <button
+                  type="button"
+                  class="attribute-remove"
+                  [attr.aria-label]="'Quitar atributo ' + (i + 1)"
+                  title="Quitar atributo"
+                  (click)="removeAtributo(i)"
+                >
+                  ✕
+                </button>
               </div>
-            } @else {
-              <p class="attributes-empty">
-                Sin atributos. Agrega clave y valor; se guardan como JSON en el ambiente.
-              </p>
             }
           </div>
+        } @else {
+          <p class="attributes-empty">
+            Sin atributos. Agrega clave y valor; se guardan como JSON en el ambiente.
+          </p>
+        }
+      </div>
 
-          <div class="images-section">
-            <app-image-manager
-              [entityId]="ambiente().id"
-              [imagenes]="info().imagenes"
-              [api]="infoApi"
-              (imagesApplied)="onImagesApplied()"
-            />
-          </div>
+      <div class="images-section">
+        <app-image-manager
+          [entityId]="ambiente().id"
+          [imagenes]="info().imagenes"
+          [api]="infoApi"
+          (imagesApplied)="onImagesApplied()"
+        />
+      </div>
 
-          @if (error()) {
-            <div class="form-error">{{ error() }}</div>
-          }
-
-          <div class="modal-actions">
-            <button type="button" class="btn btn--secondary" (click)="close()">Cerrar</button>
-            <button type="submit" class="btn btn--primary" [disabled]="saving()">
-              {{ saving() ? 'Guardando...' : 'Guardar información' }}
-            </button>
-          </div>
-        </form>
+      @if (error()) {
+        <div class="form-error" role="alert">{{ error() }}</div>
       }
-    </div>
-  </div>
-</div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn--secondary" (click)="close()">Cerrar</button>
+        <button type="submit" class="btn btn--primary" [disabled]="saving()">
+          {{ saving() ? 'Guardando...' : 'Guardar información' }}
+        </button>
+      </div>
+    </form>
+  }
+</app-modal>

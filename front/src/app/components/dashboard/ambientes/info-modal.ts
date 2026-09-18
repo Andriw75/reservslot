@@ -5,6 +5,7 @@ import { AmbientesService } from '../../../services/ambientes.service';
 import { SportslotStoreService } from '../../../services/sportslot-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { ImageManagerComponent } from '../../../common/image-manager/image-manager';
+import { ModalComponent } from '../../../common/ui/modal/modal';
 import type { ImagenesApi } from '../../../common/image-manager/image-manager';
 import type { Ambiente } from '../../../models/ambiente';
 import type { AtributoItem } from '../../../models/ambiente-info';
@@ -13,7 +14,7 @@ import type { AtributoItem } from '../../../models/ambiente-info';
   selector: 'app-ambiente-info-modal',
   templateUrl: './info-modal.html',
   styleUrl: './info-modal.css',
-  imports: [FormsModule, DragDropModule, ImageManagerComponent],
+  imports: [FormsModule, DragDropModule, ImageManagerComponent, ModalComponent],
 })
 export class AmbienteInfoModalComponent {
   private service = inject(AmbientesService);

@@ -1,17 +1,32 @@
 @if (totalPages() > 1) {
-  <div class="pagination-bar">
-    <button class="page-btn" (click)="jump(-1)" [disabled]="page() <= 1">&lsaquo;</button>
+  <nav class="pagination-bar" aria-label="Paginación">
+    <button
+      class="page-btn"
+      (click)="jump(-1)"
+      [disabled]="page() <= 1"
+      aria-label="Página anterior"
+    >
+      &lsaquo;
+    </button>
 
     @for (item of beforeItems(); track $index) {
       @if (item === 'ellipsis') {
-        <span class="ellipsis">&hellip;</span>
+        <span class="ellipsis" aria-hidden="true">&hellip;</span>
       } @else {
-        <button class="page-btn" (click)="goTo(item)">{{ item }}</button>
+        <button
+          class="page-btn"
+          (click)="goTo(item)"
+          [attr.aria-current]="item === page() ? 'page' : null"
+        >
+          {{ item }}
+        </button>
       }
     }
 
     <div class="combo-wrapper">
+      <label class="sr-only" for="pagination-input">Ir a la página</label>
       <input
+        id="pagination-input"
         class="page-input"
         type="text"
         inputmode="numeric"
@@ -42,14 +57,27 @@
 
     @for (item of afterItems(); track $index) {
       @if (item === 'ellipsis') {
-        <span class="ellipsis">&hellip;</span>
+        <span class="ellipsis" aria-hidden="true">&hellip;</span>
       } @else {
-        <button class="page-btn" (click)="goTo(item)">{{ item }}</button>
+        <button
+          class="page-btn"
+          (click)="goTo(item)"
+          [attr.aria-current]="item === page() ? 'page' : null"
+        >
+          {{ item }}
+        </button>
       }
     }
 
-    <button class="page-btn" (click)="jump(1)" [disabled]="page() >= totalPages()">&rsaquo;</button>
+    <button
+      class="page-btn"
+      (click)="jump(1)"
+      [disabled]="page() >= totalPages()"
+      aria-label="Página siguiente"
+    >
+      &rsaquo;
+    </button>
 
     <span class="page-count">{{ total() }} total</span>
-  </div>
+  </nav>
 }

@@ -2,14 +2,14 @@ import { Component, effect, inject, input, output, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { OcupacionesService } from '../../../services/ocupaciones.service';
 import { ToastService } from '../../../services/toast.service';
+import { ModalComponent } from '../../../common/ui/modal/modal';
 import type { Ocupacion, OcupacionInput } from '../../../models/ocupacion';
 import { formatLocalInput, toLimaIso } from './ocupacion-utils';
 
 @Component({
   selector: 'app-ocupacion-modal',
   templateUrl: './modal.html',
-  styleUrl: './modal.css',
-  imports: [FormsModule],
+  imports: [FormsModule, ModalComponent],
 })
 export class OcupacionModalComponent {
   private service = inject(OcupacionesService);

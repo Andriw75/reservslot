@@ -4,57 +4,88 @@
   margin: 0;
 }
 
-.button {
-  background-color: transparent;
-  border: none;
-  color: white;
-  padding: 12px 16px;
-  cursor: pointer;
-  font-size: 15px;
-  border-radius: 8px;
-  text-align: left;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 100%;
+.button,
+.toggleLabel {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius);
+  background-color: transparent;
+  color: #fff;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
   position: relative;
   overflow: hidden;
-  text-decoration: none;
-  box-sizing: border-box;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
-.button:hover {
+.toggleLabel {
+  justify-content: space-between;
+  font-weight: 600;
+  user-select: none;
+}
+
+.button:hover,
+.toggleLabel:hover {
   background-color: rgba(255, 255, 255, 0.08);
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateX(2px);
 }
 
-.active {
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  border-left: 3px solid var(--secondary);
+.button.active {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-left: 3px solid var(--primary-light);
 }
 
 .menuText {
   flex: 1;
   font-weight: 500;
-  transition: all 0.3s ease;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .submenu {
-  padding-left: 32px;
-  margin-top: 4px;
+  padding-left: var(--space-6);
+  margin-top: var(--space-1);
   border-left: 2px solid rgba(255, 255, 255, 0.15);
-  animation: slideDown 0.3s ease-out;
+  animation: slideDown 0.25s ease-out;
+}
+
+.toggleContent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.arrow {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.7);
+  transition: transform 0.2s ease;
+}
+
+.toggleLabel:hover .arrow {
+  color: var(--primary-light);
+}
+
+.arrow.open {
+  transform: rotate(90deg);
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
@@ -62,42 +93,8 @@
   }
 }
 
-.toggleLabel {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  font-weight: 600;
-  padding: 12px 16px;
-  border-radius: 8px;
-  user-select: none;
-  transition: all 0.3s ease;
-  color: white;
-  gap: 12px;
-}
-
-.toggleLabel:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  transform: translateX(4px);
-}
-
-.toggleContent {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-}
-
-.arrow {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  transition: transform 0.3s ease;
-}
-
-.toggleLabel:hover .arrow {
-  color: var(--secondary);
-}
-
-.arrow.open {
-  transform: rotate(90deg);
+@media (prefers-reduced-motion: reduce) {
+  .submenu {
+    animation: none;
+  }
 }

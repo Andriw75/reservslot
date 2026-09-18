@@ -7,12 +7,12 @@
   <table class="table">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Color</th>
-        <th>Nombre</th>
-        <th>Descripción</th>
-        <th>Activo</th>
-        <th>Acciones</th>
+        <th scope="col">ID</th>
+        <th scope="col">Color</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">Activo</th>
+        <th scope="col">Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -20,7 +20,12 @@
         <tr>
           <td>{{ categoria.id }}</td>
           <td>
-            <span class="color-swatch" [style.background]="categoria.color || '#e2e8f0'"></span>
+            <span
+              class="color-swatch"
+              role="img"
+              [style.background]="categoria.color || 'var(--border)'"
+              [attr.aria-label]="'Color ' + (categoria.color || 'sin definir')"
+            ></span>
           </td>
           <td>
             <strong>{{ categoria.nombre }}</strong>
@@ -34,15 +39,25 @@
             }
           </td>
           <td>
-            <button class="btn-icon" title="Editar" (click)="openEdit(categoria)">✏️</button>
-            <button
-              class="btn-icon"
-              title="Eliminar"
-              (click)="confirmDelete(categoria)"
-              [disabled]="deleting() === categoria.id"
-            >
-              🗑️
-            </button>
+            <div class="row-actions">
+              <button
+                class="icon-btn"
+                title="Editar"
+                aria-label="Editar categoría"
+                (click)="openEdit(categoria)"
+              >
+                ✏️
+              </button>
+              <button
+                class="icon-btn"
+                title="Eliminar"
+                aria-label="Eliminar categoría"
+                (click)="confirmDelete(categoria)"
+                [disabled]="deleting() === categoria.id"
+              >
+                🗑️
+              </button>
+            </div>
           </td>
         </tr>
       } @empty {

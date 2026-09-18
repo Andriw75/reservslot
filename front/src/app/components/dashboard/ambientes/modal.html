@@ -1,43 +1,41 @@
-<div class="overlay" (click)="close()">
-  <div class="modal" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>{{ isEditing() ? 'Editar ambiente' : 'Nuevo ambiente' }}</h2>
-      <button class="close-btn" (click)="close()">&times;</button>
+<app-modal [title]="isEditing() ? 'Editar ambiente' : 'Nuevo ambiente'" (closed)="close()">
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-grid">
+      <div class="field field--full">
+        <label for="ambiente-nombre">Nombre *</label>
+        <input id="ambiente-nombre" type="text" [(ngModel)]="form.nombre" name="nombre" required />
+      </div>
+      <div class="field field--full">
+        <label for="ambiente-categoria">Categoría *</label>
+        <select
+          id="ambiente-categoria"
+          [(ngModel)]="form.categoria_id"
+          name="categoria_id"
+          required
+        >
+          <option [ngValue]="null" disabled>Seleccione una categoría</option>
+          @for (categoria of categorias(); track categoria.id) {
+            <option [ngValue]="categoria.id">{{ categoria.nombre }}</option>
+          }
+        </select>
+      </div>
+      <div class="field field--checkbox field--full">
+        <label>
+          <input type="checkbox" [(ngModel)]="form.activo" name="activo" />
+          Activo
+        </label>
+      </div>
     </div>
 
-    <form (ngSubmit)="onSubmit()" class="modal-body">
-      <div class="grid">
-        <div class="field field--full">
-          <label>Nombre *</label>
-          <input type="text" [(ngModel)]="form.nombre" name="nombre" required />
-        </div>
-        <div class="field field--full">
-          <label>Categoría *</label>
-          <select [(ngModel)]="form.categoria_id" name="categoria_id" required>
-            <option [ngValue]="null" disabled>Seleccione una categoría</option>
-            @for (categoria of categorias(); track categoria.id) {
-              <option [ngValue]="categoria.id">{{ categoria.nombre }}</option>
-            }
-          </select>
-        </div>
-        <div class="field field--full">
-          <label>
-            <input type="checkbox" [(ngModel)]="form.activo" name="activo" />
-            Activo
-          </label>
-        </div>
-      </div>
+    @if (error()) {
+      <div class="form-error" role="alert">{{ error() }}</div>
+    }
 
-      @if (error()) {
-        <div class="form-error">{{ error() }}</div>
-      }
-
-      <div class="modal-actions">
-        <button type="button" class="btn btn--secondary" (click)="close()">Cancelar</button>
-        <button type="submit" class="btn btn--primary" [disabled]="saving()">
-          {{ saving() ? 'Guardando...' : 'Guardar' }}
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn--secondary" (click)="close()">Cancelar</button>
+      <button type="submit" class="btn btn--primary" [disabled]="saving()">
+        {{ saving() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</app-modal>

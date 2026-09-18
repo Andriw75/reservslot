@@ -2,13 +2,13 @@ import { Component, effect, inject, input, output, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { CategoriasService } from '../../../services/categorias.service';
 import { ToastService } from '../../../services/toast.service';
+import { ModalComponent } from '../../../common/ui/modal/modal';
 import type { Categoria, CategoriaInput } from '../../../models/categoria';
 
 @Component({
   selector: 'app-categoria-modal',
   templateUrl: './modal.html',
-  styleUrl: './modal.css',
-  imports: [FormsModule],
+  imports: [FormsModule, ModalComponent],
 })
 export class CategoriaModalComponent {
   private service = inject(CategoriasService);

@@ -1,6 +1,7 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { ShareService } from '../../services/share.service';
 import { ToastService } from '../../services/toast.service';
+import { ModalComponent } from '../ui/modal/modal';
 
 export type ShareVariant = 'button' | 'icon' | 'flat' | 'ghost';
 
@@ -8,6 +9,7 @@ export type ShareVariant = 'button' | 'icon' | 'flat' | 'ghost';
   selector: 'app-share-button',
   templateUrl: './share.html',
   styleUrl: './share.css',
+  imports: [ModalComponent],
 })
 export class ShareButtonComponent {
   private share = inject(ShareService);
