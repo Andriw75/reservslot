@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Injectable, inject } from '@angular/core';
 
 export interface ShareData {
   title?: string;
@@ -8,11 +9,15 @@ export interface ShareData {
 
 @Injectable({ providedIn: 'root' })
 export class ShareService {
+  private document = inject(DOCUMENT);
+
   // Enlace público del catálogo de ambientes. Con `id` el portal queda con ese
   // ambiente resaltado; sin `id` abre el catálogo tal cual.
+  // Se apoya en <base href> para respetar la subruta en la que se publica la SPA
+  // (p. ej. /reservslot/) en lugar de asumir siempre la raíz del dominio.
   ambienteUrl(id?: number | null): string {
-    const base = `${window.location.origin}/`;
-    return id ? `${base}?ambiente=${id}` : base;
+    const base = this.document.baseURI;
+    return id ? new URL(`?ambiente=${id}`, base).toString() : base;
   }
 
   canNativeShare(): boolean {

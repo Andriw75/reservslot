@@ -146,10 +146,10 @@ Usuario inicial (mock): `usuario` / `placeholder-password`.
 ## 6. Enlaces para compartir un ambiente
 
 El botón **Compartir** (portal público, detalle del ambiente y panel admin) copia al
-portapapeles un enlace con este formato:
+portapapeles un enlace con este formato (respetando la subruta de publicación de la SPA):
 
 ```
-https://tu-dominio/?ambiente={id}
+https://tu-dominio/reservslot/?ambiente={id}
 ```
 
 Al abrirlo, el portal baja hasta la tarjeta de ese ambiente dentro del catálogo y la

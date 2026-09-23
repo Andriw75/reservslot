@@ -1,40 +1,56 @@
-<header class="portal-header">
+<header class="portal-header" [class.is-scrolled]="scrolled()">
   <div class="brand">
-    <span class="brand-mark">RS</span>
+    <span class="brand-mark" aria-hidden="true">RS</span>
     <div class="brand-text">
       <span class="brand-name">ReservSlot</span>
       <span class="brand-tagline">Reserva de ambientes deportivos</span>
     </div>
   </div>
-  <nav class="portal-nav">
+  <nav class="portal-nav" aria-label="Secciones">
     <a href="#ambientes" (click)="scrollTo($event, 'ambientes')">Ambientes</a>
-    <a href="#como-funciona" (click)="scrollTo($event, 'como-funciona')">Cómo funciona</a>
+    <a href="#como-funciona" (click)="scrollTo($event, 'como-funciona')">Cómo reservar</a>
+    <a href="#preguntas" (click)="scrollTo($event, 'preguntas')">Preguntas</a>
   </nav>
 </header>
 
 <main>
   <section class="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <span class="blob blob--1"></span>
+      <span class="blob blob--2"></span>
+      <span class="blob blob--3"></span>
+      <span class="hero-grid"></span>
+    </div>
+
     <div class="hero-inner">
-      <div class="hero-content">
+      <div class="hero-content" appReveal>
         <span class="hero-badge">
           <span class="badge-dot"></span>
           Disponibilidad actualizada en vivo
         </span>
         <h1>
-          Reserva tu ambiente deportivo
-          <span class="hero-highlight">en segundos</span>
+          La cancha libre, <span class="hero-highlight">a la vista.</span>
+          <span class="hero-line">Reserva sin llamadas.</span>
         </h1>
         <p class="hero-lead">
-          Mira qué horarios están libres, elige el que más te convenga y confirma tu reserva. Sin
-          llamadas, sin esperas y sin idas y vueltas.
+          Explora el horario semanal real de cada ambiente y elige el momento que quieras. Sin
+          registrarte, sin esperas.
         </p>
 
         <div class="hero-actions">
-          <button type="button" class="btn btn--accent" (click)="scrollTo($event, 'ambientes')">
-            Ver ambientes disponibles
+          <button
+            type="button"
+            class="btn btn--accent btn--lg"
+            (click)="scrollTo($event, 'ambientes')"
+          >
+            Ver horarios disponibles
           </button>
-          <button type="button" class="btn btn--ghost" (click)="scrollTo($event, 'como-funciona')">
-            Cómo funciona
+          <button
+            type="button"
+            class="btn btn--ghost btn--lg"
+            (click)="scrollTo($event, 'como-funciona')"
+          >
+            Cómo reservar
           </button>
         </div>
 
@@ -54,38 +70,48 @@
         </dl>
       </div>
 
-      <div class="hero-visual" aria-hidden="true">
-        <div class="mock-calendar">
-          <div class="mock-head">
-            <span class="mock-title">Horario de la semana</span>
+      <div class="hero-visual" aria-hidden="true" appReveal [appRevealDelay]="120">
+        <div class="preview-card">
+          <div class="preview-head">
+            <span class="preview-title">Horario de la semana</span>
             <span class="mock-live"><span class="badge-dot"></span> en vivo</span>
           </div>
-          <div class="mock-days">
+          <div class="preview-days">
             @for (day of ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']; track day) {
-              <span class="mock-day">{{ day }}</span>
+              <span>{{ day }}</span>
             }
           </div>
-          <div class="mock-grid">
-            <span class="mock-block mock-block--a"></span>
-            <span class="mock-block mock-block--b"></span>
-            <span class="mock-block mock-block--c"></span>
+          <div class="preview-grid">
+            <span class="preview-block preview-block--a"></span>
+            <span class="preview-block preview-block--b"></span>
+            <span class="preview-block preview-block--c"></span>
+            <span class="preview-block preview-block--d"></span>
           </div>
-          <div class="mock-foot">
+          <div class="preview-foot">
             <span class="mock-chip mock-chip--free">Libre</span>
             <span class="mock-chip mock-chip--busy">Ocupado</span>
           </div>
         </div>
+
+        <span class="float-chip float-chip--a">
+          <span class="float-dot"></span>
+          +3 horarios libres hoy
+        </span>
+        <span class="float-chip float-chip--b">Piscina · 18:00</span>
       </div>
     </div>
   </section>
 
   <section class="steps" id="como-funciona">
-    <h2 class="section-title">¿Cómo funciona?</h2>
-    <p class="section-subtitle">Tres pasos y ya tienes tu horario reservado.</p>
+    <div class="section-head" appReveal>
+      <span class="section-eyebrow">Así de simple</span>
+      <h2 class="section-title">¿Cómo reservar?</h2>
+      <p class="section-subtitle">Tres pasos y ya tienes el horario que quieres a la vista.</p>
+    </div>
 
     <ol class="steps-grid">
       @for (paso of pasos; track paso.titulo; let i = $index) {
-        <li class="step">
+        <li class="step" appReveal [appRevealDelay]="i * 90">
           <span class="step-number">{{ i + 1 }}</span>
           <h3>{{ paso.titulo }}</h3>
           <p>{{ paso.texto }}</p>
@@ -95,8 +121,9 @@
   </section>
 
   <section class="catalog" id="ambientes">
-    <div class="catalog-head">
+    <div class="catalog-head" appReveal>
       <div>
+        <span class="section-eyebrow">Catálogo</span>
         <h2 class="section-title">Nuestros ambientes</h2>
         <p class="section-subtitle">
           Explora por categoría y entra al ambiente para ver su horario completo.
@@ -107,12 +134,28 @@
       </span>
     </div>
 
+    @if (groups().length > 0) {
+      <nav class="cat-nav" aria-label="Ir a categoría">
+        @for (group of groups(); track group.categoria?.id ?? 'otros') {
+          <button
+            type="button"
+            class="cat-pill"
+            [style.--pill]="categoryColor(group)"
+            (click)="scrollToCategory($event, group)"
+          >
+            <span class="cat-pill-dot"></span>
+            {{ group.categoria?.nombre ?? 'Otros' }}
+          </button>
+        }
+      </nav>
+    }
+
     @if (groups().length === 0) {
       <div class="empty">Todavía no hay ambientes publicados. Vuelve a revisar en un momento.</div>
     }
 
     @for (group of groups(); track group.categoria?.id ?? 'otros') {
-      <section class="category">
+      <section class="category" [id]="categoryAnchor(group)" appReveal>
         <div class="category-header">
           <div class="category-heading">
             <span class="category-dot" [style.background]="categoryColor(group)"></span>
@@ -157,7 +200,7 @@
                   <h4 class="card-name">{{ ambiente.nombre }}</h4>
                   <span class="card-cta">
                     Ver disponibilidad
-                    <span class="card-cta-arrow">→</span>
+                    <span class="card-cta-arrow" aria-hidden="true">→</span>
                   </span>
                 </div>
               </a>
@@ -177,17 +220,130 @@
     }
   </section>
 
-  <section class="cta-band">
+  <section class="benefits" id="beneficios">
+    <div class="section-head" appReveal>
+      <span class="section-eyebrow">Por qué reservar aquí</span>
+      <h2 class="section-title">Menos trámites, más juego</h2>
+      <p class="section-subtitle">
+        Todo lo que necesitas para encontrar tu horario, sin llamadas ni esperas.
+      </p>
+    </div>
+
+    <div class="benefits-grid">
+      @for (beneficio of beneficios; track beneficio.key; let i = $index) {
+        <article class="benefit" appReveal [appRevealDelay]="i * 80">
+          <span class="benefit-icon" aria-hidden="true">
+            @switch (beneficio.key) {
+              @case ('vivo') {
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              }
+              @case ('sin-llamadas') {
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              }
+              @case ('sin-costo') {
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"
+                  />
+                  <circle cx="7" cy="7" r="1.5" />
+                </svg>
+              }
+              @default {
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m12 2 9 5-9 5-9-5 9-5z" />
+                  <path d="m3 12 9 5 9-5" />
+                  <path d="m3 17 9 5 9-5" />
+                </svg>
+              }
+            }
+          </span>
+          <h3>{{ beneficio.titulo }}</h3>
+          <p>{{ beneficio.texto }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="faq" id="preguntas">
+    <div class="section-head" appReveal>
+      <span class="section-eyebrow">Preguntas frecuentes</span>
+      <h2 class="section-title">Antes de reservar</h2>
+      <p class="section-subtitle">Lo que suelen preguntar antes de elegir su horario.</p>
+    </div>
+
+    <div class="faq-list" appReveal>
+      @for (faq of faqs; track faq.pregunta; let i = $index) {
+        <div class="faq-item" [class.is-open]="openFaq() === i">
+          <h3 class="faq-question">
+            <button
+              type="button"
+              class="faq-trigger"
+              [attr.aria-expanded]="openFaq() === i"
+              [attr.aria-controls]="'faq-panel-' + i"
+              [id]="'faq-trigger-' + i"
+              (click)="toggleFaq(i)"
+            >
+              <span>{{ faq.pregunta }}</span>
+              <span class="faq-chevron" aria-hidden="true">▾</span>
+            </button>
+          </h3>
+          <div
+            class="faq-panel"
+            role="region"
+            [id]="'faq-panel-' + i"
+            [attr.aria-labelledby]="'faq-trigger-' + i"
+            [attr.hidden]="openFaq() !== i ? '' : null"
+          >
+            <p>{{ faq.respuesta }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="cta-band" appReveal>
     <div class="cta-band-inner">
       <div>
         <h2>Encuentra tu horario y resérvalo</h2>
         <p>
-          Explora los ambientes disponibles, revisa su horario semanal en vivo y elige el momento
+          Explora los ambientes disponibles, revisa su horario semanal en vivo y coordina el momento
           que mejor te venga. Sin llamadas ni esperas.
         </p>
       </div>
-      <button type="button" class="btn btn--accent" (click)="scrollTo($event, 'ambientes')">
-        Ver ambientes
+      <button type="button" class="btn btn--accent btn--lg" (click)="scrollTo($event, 'ambientes')">
+        Ver horarios disponibles
       </button>
     </div>
   </section>

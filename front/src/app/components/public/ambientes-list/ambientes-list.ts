@@ -1,8 +1,9 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, HostListener, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SportslotStoreService } from '../../../services/sportslot-store.service';
 import { ShareService } from '../../../services/share.service';
 import { ShareButtonComponent } from '../../../common/share/share';
+import { RevealDirective } from '../../../common/ui/reveal/reveal.directive';
 import { imagenArchivoUrl } from '../../../models/imagen';
 import type { Ambiente } from '../../../models/ambiente';
 import type { Categoria } from '../../../models/categoria';
@@ -17,11 +18,22 @@ interface Paso {
   texto: string;
 }
 
+interface Beneficio {
+  key: 'vivo' | 'sin-llamadas' | 'sin-costo' | 'categorias';
+  titulo: string;
+  texto: string;
+}
+
+interface Faq {
+  pregunta: string;
+  respuesta: string;
+}
+
 @Component({
   selector: 'app-public-ambientes-list',
   templateUrl: './ambientes-list.html',
   styleUrl: './ambientes-list.css',
-  imports: [RouterLink, ShareButtonComponent],
+  imports: [RouterLink, ShareButtonComponent, RevealDirective],
 })
 export class AmbientesListComponent {
   private store = inject(SportslotStoreService);
@@ -35,21 +47,68 @@ export class AmbientesListComponent {
   ambientes = this.store.ambientes;
 
   highlightedId = signal<number | null>(null);
+  scrolled = signal(false);
+  openFaq = signal<number | null>(0);
 
   private alreadyHighlighted: number | null = null;
 
   readonly pasos: Paso[] = [
     {
-      titulo: 'Elige la categoría',
-      texto: 'Canchas, piscinas, salas y más. Cada categoría agrupa sus ambientes.',
+      titulo: 'Elige tu ambiente',
+      texto: 'Canchas, piscinas, salas y más, agrupados por categoría.',
     },
     {
-      titulo: 'Revisa la disponibilidad',
-      texto: 'Mira el horario semanal de cada ambiente, actualizado en tiempo real.',
+      titulo: 'Consulta el horario en vivo',
+      texto: 'Mira el calendario semanal real de cada ambiente.',
     },
     {
-      titulo: 'Confirma tu horario',
-      texto: 'Selecciona el día y la hora libre que más te convenga, sin llamadas.',
+      titulo: 'Coordina tu reserva',
+      texto: 'Confirma el horario disponible con la administración del recinto.',
+    },
+  ];
+
+  readonly beneficios: Beneficio[] = [
+    {
+      key: 'vivo',
+      titulo: 'Disponibilidad en vivo',
+      texto: 'El calendario se actualiza al instante: nada de horarios desactualizados.',
+    },
+    {
+      key: 'sin-llamadas',
+      titulo: 'Sin llamadas ni idas y vueltas',
+      texto: 'Revisa todos los horarios desde el móvil, cuando quieras.',
+    },
+    {
+      key: 'sin-costo',
+      titulo: 'Consulta sin costo',
+      texto: 'Ver la disponibilidad no cuesta nada ni requiere registrarte.',
+    },
+    {
+      key: 'categorias',
+      titulo: 'Todo en un solo lugar',
+      texto: 'Canchas, piscinas, salas y más, ordenados por categoría.',
+    },
+  ];
+
+  readonly faqs: Faq[] = [
+    {
+      pregunta: '¿Necesito crear una cuenta?',
+      respuesta:
+        'No. El portal es público: puedes ver categorías, ambientes y horarios sin registrarte.',
+    },
+    {
+      pregunta: '¿La reserva se confirma en la web?',
+      respuesta:
+        'Aquí consultas la disponibilidad en vivo. La reserva se coordina y confirma con la administración del recinto.',
+    },
+    {
+      pregunta: '¿Tiene algún costo consultar?',
+      respuesta: 'No, consultar la disponibilidad es completamente gratis.',
+    },
+    {
+      pregunta: '¿La disponibilidad está actualizada?',
+      respuesta:
+        'Sí. El horario se actualiza en tiempo real, así que lo que ves es lo que está libre.',
     },
   ];
 
@@ -105,6 +164,11 @@ export class AmbientesListComponent {
     });
   }
 
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.scrolled.set(window.scrollY > 8);
+  }
+
   ambienteUrl(id: number): string {
     return this.share.ambienteUrl(id);
   }
@@ -113,13 +177,28 @@ export class AmbientesListComponent {
     return group.categoria?.color || 'var(--primary)';
   }
 
+  categoryAnchor(group: CategoriaGroup): string {
+    return `categoria-${group.categoria?.id ?? 'otros'}`;
+  }
+
   ambienteImage(ambiente: Ambiente): string | null {
     return ambiente.imagen_principal ? imagenArchivoUrl(ambiente.imagen_principal) : null;
+  }
+
+  toggleFaq(index: number): void {
+    this.openFaq.update((current) => (current === index ? null : index));
   }
 
   scrollTo(event: Event, id: string): void {
     event.preventDefault();
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  scrollToCategory(event: Event, group: CategoriaGroup): void {
+    event.preventDefault();
+    document
+      .getElementById(this.categoryAnchor(group))
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   private scrollToAmbiente(id: number): void {
