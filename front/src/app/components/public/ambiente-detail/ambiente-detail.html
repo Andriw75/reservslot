@@ -104,14 +104,39 @@
 
     <section class="schedule-section">
       <div class="schedule-header">
-        <h2>Horario de la semana</h2>
-        @if (weekLabel()) {
-          <span class="schedule-range">{{ weekLabel() }}</span>
-        }
+        <div class="schedule-title">
+          <h2>Horario de la semana</h2>
+          @if (weekLabel()) {
+            <span class="schedule-range">{{ weekLabel() }}</span>
+          }
+        </div>
+
+        <div class="schedule-toolbar">
+          <div class="schedule-jumps" role="group" aria-label="Ir a franja horaria">
+            <button type="button" (click)="scrollToHour(0)">Madrugada</button>
+            <button type="button" (click)="scrollToHour(7)">Mañana</button>
+            <button type="button" (click)="scrollToHour(13)">Tarde</button>
+            <button type="button" (click)="scrollToHour(19)">Noche</button>
+          </div>
+          <div class="schedule-zoom" role="group" aria-label="Zoom del horario">
+            <button
+              type="button"
+              (click)="zoomOut()"
+              [disabled]="!canZoomOut()"
+              aria-label="Alejar"
+            >
+              <span aria-hidden="true">&minus;</span>
+            </button>
+            <button type="button" (click)="zoomIn()" [disabled]="!canZoomIn()" aria-label="Acercar">
+              <span aria-hidden="true">&plus;</span>
+            </button>
+          </div>
+          <button type="button" class="schedule-now-btn" (click)="scrollToNow()">Ahora</button>
+        </div>
       </div>
 
-      <div class="schedule-scroll">
-        <div class="schedule">
+      <div class="schedule-scroll" #scheduleScroll>
+        <div class="schedule" [style.--hour-height]="hourHeight() + 'px'">
           <div class="schedule-days-row">
             <div class="schedule-corner"></div>
             @for (day of schedule().days; track day.date) {
@@ -125,7 +150,7 @@
           <div class="schedule-grid">
             <div class="hours-column">
               @for (hour of schedule().hours; track hour) {
-                <div class="schedule-hour">{{ hour }}:00</div>
+                <div class="schedule-hour">{{ hourLabel(hour) }}</div>
               }
             </div>
             @for (day of schedule().days; track day.date; let dayIndex = $index) {
@@ -158,6 +183,9 @@
                     <span class="block-time">{{ segment.label }}</span>
                     <span class="block-range">{{ segment.startLabel }}–{{ segment.endLabel }}</span>
                   </span>
+                }
+                @if (day.isToday) {
+                  <span class="now-line" [style.top.px]="nowTop()" aria-hidden="true"></span>
                 }
               </div>
             }

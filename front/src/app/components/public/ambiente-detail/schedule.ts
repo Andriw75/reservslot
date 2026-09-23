@@ -3,12 +3,14 @@ import { toDateKey } from './time';
 export const DAY_NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 export const DAY_SHORT = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
-export const DEFAULT_START_HOUR = 7;
-export const DEFAULT_END_HOUR = 22;
+// El visor público muestra el día completo (00:00–24:00); el usuario navega
+// con los controles de zoom y saltos por franja.
+export const DAY_START_HOUR = 0;
+export const DAY_END_HOUR = 24;
 
-// Alto en píxeles de cada fila de hora. Debe coincidir con `.schedule-cell`
-// y `.schedule-hour` en ambiente-detail.css.
-export const HOUR_HEIGHT = 34;
+// Alto por defecto de cada fila de hora, en píxeles. El componente lo expone
+// como variable CSS `--hour-height` (ver ambiente-detail.css).
+export const DEFAULT_HOUR_HEIGHT = 34;
 
 // Un bloque con menos de una hora de duración no tiene espacio para mostrar
 // hora + rango, así que solo muestra la hora; si dura menos de media hora no
@@ -72,10 +74,6 @@ function timeLabel(date: Date): string {
   return `${hours}:${minutes}`;
 }
 
-function decimalHour(date: Date): number {
-  return date.getHours() + date.getMinutes() / 60;
-}
-
 function dateLabel(date: Date): string {
   const day = DAY_SHORT[(date.getDay() + 6) % 7];
   const dd = String(date.getDate()).padStart(2, '0');
@@ -111,8 +109,8 @@ export function buildWeek(ocupaciones: OcupacionLike[], reference = new Date()):
   });
 
   const ranges: { ocupacionId: number; inicio: Date; fin: Date }[] = [];
-  let startHour = DEFAULT_START_HOUR;
-  let endHour = DEFAULT_END_HOUR;
+  const startHour = DAY_START_HOUR;
+  const endHour = DAY_END_HOUR;
 
   for (const ocupacion of ocupaciones) {
     const inicio = new Date(ocupacion.inicio);
@@ -121,19 +119,7 @@ export function buildWeek(ocupaciones: OcupacionLike[], reference = new Date()):
     if (fin.getTime() <= inicio.getTime()) continue;
 
     ranges.push({ ocupacionId: ocupacion.id, inicio, fin });
-
-    const sameDay = toDateKey(inicio) === toDateKey(new Date(fin.getTime() - 1));
-    if (sameDay) {
-      startHour = Math.min(startHour, Math.floor(decimalHour(inicio)));
-      endHour = Math.max(endHour, Math.ceil(decimalHour(fin)));
-    } else {
-      startHour = 0;
-      endHour = 24;
-    }
   }
-
-  startHour = Math.max(0, Math.min(startHour, 23));
-  endHour = Math.max(startHour + 1, Math.min(24, endHour));
 
   const hours: number[] = [];
   for (let hour = startHour; hour < endHour; hour++) {

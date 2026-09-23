@@ -1,4 +1,14 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  OnDestroy,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SportslotStoreService } from '../../../services/sportslot-store.service';
 import { ShareService } from '../../../services/share.service';
@@ -7,7 +17,7 @@ import { ShareButtonComponent } from '../../../common/share/share';
 import { imagenUrl } from '../../../models/imagen';
 import type { AmbienteInfoData } from '../../../models/ambiente-info';
 import type { Imagen } from '../../../models/imagen';
-import { buildWeek } from './schedule';
+import { DEFAULT_HOUR_HEIGHT, buildWeek } from './schedule';
 import type { ScheduleSegment } from './schedule';
 import { formatRangeLabel } from './time';
 
@@ -33,11 +43,21 @@ interface TooltipState {
   styleUrl: './ambiente-detail.css',
   imports: [RouterLink, ShareButtonComponent],
 })
-export class AmbienteDetailComponent {
+export class AmbienteDetailComponent implements OnDestroy {
   private store = inject(SportslotStoreService);
   private toast = inject(ToastService);
   private router = inject(Router);
   private share = inject(ShareService);
+
+  private readonly ZOOM_STEPS = [22, 28, 34, 42, 52];
+  private readonly ZOOM_KEY = 'reservslot:schedule-hour-height';
+
+  private scheduleScroll = viewChild<ElementRef<HTMLElement>>('scheduleScroll');
+
+  hourHeight = signal(this.readStoredZoom());
+  private now = signal(new Date());
+  private nowTimer?: ReturnType<typeof setInterval>;
+  private autoScrolled = false;
 
   id = input.required<string>();
 
@@ -101,6 +121,14 @@ export class AmbienteDetailComponent {
   // resaltado (no la vista de horario).
   shareUrl = computed(() => this.share.ambienteUrl(this.ambienteId()));
 
+  todayIndex = computed(() => this.schedule().days.findIndex((day) => day.isToday));
+  nowTop = computed(() => {
+    const date = this.now();
+    return (date.getHours() + date.getMinutes() / 60) * this.hourHeight();
+  });
+  canZoomIn = computed(() => this.hourHeight() < this.ZOOM_STEPS[this.ZOOM_STEPS.length - 1]);
+  canZoomOut = computed(() => this.hourHeight() > this.ZOOM_STEPS[0]);
+
   private readonly segmentsByDay = computed(() => {
     const grouped = new Map<number, ScheduleSegment[]>();
     for (const segment of this.schedule().segments) {
@@ -119,7 +147,70 @@ export class AmbienteDetailComponent {
     return this.segmentsByDay().get(dayIndex) ?? [];
   }
 
+  hourLabel(hour: number): string {
+    return `${String(hour).padStart(2, '0')}:00`;
+  }
+
+  zoomIn(): void {
+    const next = this.ZOOM_STEPS.find((step) => step > this.hourHeight());
+    if (next !== undefined) this.setZoom(next);
+  }
+
+  zoomOut(): void {
+    const next = [...this.ZOOM_STEPS].reverse().find((step) => step < this.hourHeight());
+    if (next !== undefined) this.setZoom(next);
+  }
+
+  scrollToHour(hour: number): void {
+    const element = this.scheduleScroll()?.nativeElement;
+    if (!element) return;
+    element.scrollTo({ top: hour * this.hourHeight(), behavior: this.scrollBehavior() });
+  }
+
+  scrollToNow(): void {
+    this.scrollToHour(Math.max(0, this.now().getHours() - 1));
+  }
+
+  private setZoom(value: number): void {
+    this.hourHeight.set(value);
+    try {
+      localStorage.setItem(this.ZOOM_KEY, String(value));
+    } catch {
+      // almacenamiento no disponible
+    }
+  }
+
+  private readStoredZoom(): number {
+    try {
+      const value = Number(localStorage.getItem(this.ZOOM_KEY));
+      if (this.ZOOM_STEPS.includes(value)) return value;
+    } catch {
+      // almacenamiento no disponible
+    }
+    return DEFAULT_HOUR_HEIGHT;
+  }
+
+  private scrollBehavior(): ScrollBehavior {
+    return typeof matchMedia !== 'undefined' &&
+      matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 'auto'
+      : 'smooth';
+  }
+
+  private firstActivityHour(): number {
+    const segments = this.schedule().segments;
+    if (!segments.length) return Math.max(0, this.now().getHours() - 1);
+    const minTop = Math.min(...segments.map((segment) => segment.top));
+    return Math.max(0, Math.floor((minTop / 100) * 24) - 1);
+  }
+
+  ngOnDestroy(): void {
+    if (this.nowTimer) clearInterval(this.nowTimer);
+  }
+
   constructor() {
+    this.nowTimer = setInterval(() => this.now.set(new Date()), 60_000);
+
     effect((onCleanup) => {
       const id = this.ambienteId();
       if (Number.isNaN(id)) return;
@@ -135,6 +226,15 @@ export class AmbienteDetailComponent {
         this.store.subscribeTopic('ambientes'),
       ];
       onCleanup(() => unsubscribers.forEach((unsubscribe) => unsubscribe()));
+    });
+
+    // Auto-scroll una sola vez al primer horario con actividad (o a "ahora").
+    effect((onCleanup) => {
+      if (this.autoScrolled) return;
+      if (!this.store.catalogReady()) return;
+      this.autoScrolled = true;
+      const timer = setTimeout(() => this.scrollToHour(this.firstActivityHour()), 120);
+      onCleanup(() => clearTimeout(timer));
     });
 
     effect(() => {

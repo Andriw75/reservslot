@@ -287,10 +287,16 @@
 
 .schedule-header {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.schedule-title {
+  display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
-  margin-bottom: var(--space-4);
 }
 
 .schedule-header h2 {
@@ -300,6 +306,83 @@
 .schedule-range {
   font-size: var(--text-xs);
   color: var(--text-secondary);
+}
+
+.schedule-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.schedule-jumps,
+.schedule-zoom {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--bg);
+}
+
+.schedule-jumps button,
+.schedule-zoom button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 var(--space-3);
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.schedule-jumps button:hover,
+.schedule-zoom button:hover:not(:disabled) {
+  background: var(--primary-light);
+  color: var(--primaryFocus);
+}
+
+.schedule-zoom button {
+  min-width: 34px;
+  padding: 0;
+  font-size: var(--text-base);
+}
+
+.schedule-zoom button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.schedule-now-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-full);
+  background: var(--primary-light);
+  color: var(--primaryFocus);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.schedule-now-btn:hover {
+  background: var(--primary);
+  color: #fff;
 }
 
 /* La grilla tiene su propio scroll vertical (con la cabecera de días fija) y
@@ -327,8 +410,12 @@
 }
 
 .schedule-corner {
+  position: sticky;
+  left: 0;
+  z-index: 9;
   border-radius: var(--radius-sm);
   background: var(--bg);
+  box-shadow: 4px 0 0 var(--bg);
 }
 
 .schedule-day {
@@ -364,13 +451,18 @@
 }
 
 .hours-column {
+  position: sticky;
+  left: 0;
+  z-index: 6;
   display: flex;
   flex-direction: column;
+  background: var(--bg-card);
+  box-shadow: 4px 0 0 var(--bg-card);
 }
 
 .schedule-hour {
-  height: 34px;
-  flex: 0 0 34px;
+  height: var(--hour-height, 34px);
+  flex: 0 0 var(--hour-height, 34px);
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
@@ -386,8 +478,30 @@
 }
 
 .schedule-cell {
-  height: 34px;
+  height: var(--hour-height, 34px);
   border-bottom: 1px solid var(--border);
+}
+
+.now-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  height: 2px;
+  background: var(--danger);
+  box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.2);
+  pointer-events: none;
+}
+
+.now-line::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
 }
 
 .block {

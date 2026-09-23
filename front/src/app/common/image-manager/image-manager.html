@@ -12,7 +12,7 @@
     <div
       class="image-grid"
       cdkDropList
-      cdkDropListOrientation="horizontal"
+      cdkDropListOrientation="mixed"
       (cdkDropListDropped)="dropCard($event)"
     >
       @for (card of cards(); track card.key) {
