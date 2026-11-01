@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -49,7 +50,7 @@ func LoadConfig() (*Config, error) {
 		DBPassword:           getEnv("DB_PASSWORD", "postgres"),
 		DBName:               getEnv("DB_NAME", "reservslot"),
 		DBSSLMode:            getEnv("DB_SSLMODE", "require"),
-		JWTSecret:            getEnv("JWT_SECRET", "cambia-este-secreto-en-produccion"),
+		JWTSecret:            getEnv("JWT_SECRET", ""),
 		JWTExpirationMin:     getEnvInt("JWT_EXPIRATION_MINUTES", 60),
 		JWTRenewMin:          getEnvInt("JWT_RENEW_MINUTES", 20),
 		CookieName:           getEnv("COOKIE_NAME", "reservslot_token"),
@@ -59,6 +60,10 @@ func LoadConfig() (*Config, error) {
 		JWTLoadUserOnRenew:   getEnvBool("JWT_LOAD_USER_ON_RENEW", true),
 		PublicDir:            getEnv("PUBLIC_DIR", "./public"),
 		XAccelRedirectPrefix: getEnv("X_ACCEL_REDIRECT_PREFIX", ""),
+	}
+
+	if cfg.JWTSecret == "" || cfg.JWTSecret == "cambia-este-secreto-en-produccion" {
+		return nil, fmt.Errorf("JWT_SECRET no configurado: define un secreto propio en el entorno")
 	}
 
 	return cfg, nil

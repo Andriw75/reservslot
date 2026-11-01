@@ -69,7 +69,7 @@ Los archivos SQL viven en `back/db/` y se aplican **manualmente** en el servidor
 
 ```
 back/db/schema.sql   # esquema completo (tablas, funciones, triggers, índices)
-back/db/seed.sql     # usuario inicial (usuario / placeholder-password)
+back/db/seed.sql     # usuario inicial (solo desarrollo)
 ```
 
 Puedes pegarlos en el editor SQL de Neon, o ejecutarlos con psql:
@@ -92,7 +92,7 @@ npm run build
 El build se genera en `front/dist/front/browser`.
 
 ```powershell
-Copy-Item -Recurse -Force .\dist\front\browser\* "C:\nginx\nginx-1.28.0\html\reservslot\"
+Copy-Item -Recurse -Force .\dist\front\browser\* "C:\nginx\html\reservslot\"
 ```
 
 Para desarrollo: `npm start` (http://localhost:4200, requiere CORS hacia `:8080`).
@@ -139,7 +139,7 @@ Requiere sesión (cookie JWT):
 - `DELETE /ambientes/{id}/imagenes/{imagenID}`
 - `POST|PUT|PATCH|DELETE /ocupaciones[...]`
 
-Usuario inicial (mock): `usuario` / `placeholder-password`.
+Usuario inicial: `usuario` / `placeholder-password` (solo desarrollo; cámbiala antes de desplegar).
 
 ---
 
