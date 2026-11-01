@@ -36,7 +36,8 @@ export const environment = {
 ```
 
 `npm run build` usa `environment.production.ts` automáticamente (ver `angular.json` → `fileReplacements`).
-La SPA se publica en la raíz (`baseHref: "/"`).
+La SPA se publica en la raíz (`baseHref: "/"`). Si usas una subruta, compila con
+`npm run build -- --base-href /reservslot/`.
 
 ---
 
@@ -48,7 +49,7 @@ go build -o server.exe ./cmd/server
 .\server.exe
 ```
 
-Variables en `back/.env`:
+Variables en `back/.env` (copia `back/.env.example`):
 
 ```
 SERVER_PORT=:8080
@@ -56,6 +57,8 @@ DATABASE_URL=postgresql://usuario:password@host:5432/reservslot?sslmode=require
 PUBLIC_DIR=.
 JWT_SECRET=...
 ```
+
+Genera el secreto con `cd back; go run ./cmd/generate_secrets.go` y pégalo en `JWT_SECRET`.
 
 - `PUBLIC_DIR` es la raíz web; el código agrega `/public` y dentro `/imagenes`.
   Con `PUBLIC_DIR=.` las imágenes quedan en `back/public/imagenes`.
@@ -69,7 +72,7 @@ Los archivos SQL viven en `back/db/` y se aplican **manualmente** en el servidor
 
 ```
 back/db/schema.sql   # esquema completo (tablas, funciones, triggers, índices)
-back/db/seed.sql     # usuario inicial (solo desarrollo)
+back/db/seed.sql     # sin usuarios por defecto
 ```
 
 Puedes pegarlos en el editor SQL de Neon, o ejecutarlos con psql:
@@ -77,6 +80,15 @@ Puedes pegarlos en el editor SQL de Neon, o ejecutarlos con psql:
 ```powershell
 psql "$env:DATABASE_URL" -f back/db/schema.sql
 psql "$env:DATABASE_URL" -f back/db/seed.sql
+```
+
+El primer usuario se crea sin guardar credenciales en el repositorio:
+
+```powershell
+cd back
+$env:ADMIN_USERNAME="admin"
+$env:ADMIN_PASSWORD="<contraseña-segura>"
+go run ./cmd/create_user
 ```
 
 ---
@@ -139,7 +151,7 @@ Requiere sesión (cookie JWT):
 - `DELETE /ambientes/{id}/imagenes/{imagenID}`
 - `POST|PUT|PATCH|DELETE /ocupaciones[...]`
 
-Usuario inicial: `usuario` / `placeholder-password` (solo desarrollo; cámbiala antes de desplegar).
+El primer usuario se crea con `back/cmd/create_user` (ver sección de base de datos).
 
 ---
 
@@ -149,7 +161,7 @@ El botón **Compartir** (portal público, detalle del ambiente y panel admin) co
 portapapeles un enlace con este formato (respetando la subruta de publicación de la SPA):
 
 ```
-https://tu-dominio/reservslot/?ambiente={id}
+https://tu-dominio/?ambiente={id}
 ```
 
 Al abrirlo, el portal baja hasta la tarjeta de ese ambiente dentro del catálogo y la

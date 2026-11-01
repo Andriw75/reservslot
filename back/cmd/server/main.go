@@ -27,6 +27,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if cfg.JWTSecret == "" || cfg.JWTSecret == "cambia-este-secreto-en-produccion" {
+		slog.Error("JWT_SECRET no configurado: genera uno con 'go run ./cmd/generate_secrets.go' y defínelo en el entorno")
+		os.Exit(1)
+	}
+
 	dsn := cfg.DBDSN()
 	if dsn == "" {
 		slog.Error("DATABASE_URL no está configurado")
